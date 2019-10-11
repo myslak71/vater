@@ -1,3 +1,3 @@
 # Vater
 
-Python client to VAT payers register API.
+Python client for VAT payers register API.

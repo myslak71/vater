@@ -1,0 +1,127 @@
+"""Test client module."""
+import datetime
+
+import responses
+
+from vater.models import Company, Subject
+
+
+class TestSubjectSearch:
+    """Test class for search methods."""
+
+    def set_up(self):
+        """Set up test environment."""
+        self.example_subject_dict = {
+            "name": "Eminem",
+            "nip": 5 * "69",
+            "statusVat": "Active",
+            "regon": 9 * "7",
+            "pesel": 11 * "7",
+            "krs": 5 * "69",
+            "residenceAddress": "8 mile",
+            "workingAddress": "8 mile",
+            "representatives": [
+                {
+                    "companyName": "Moby Dick Inc",
+                    "firstName": "sir Richard",
+                    "lastName": "Lion Heart",
+                    "nip": 5 * "69",
+                    "pesel": 11 * "7",
+                }
+            ],
+            "authorizedClerks": [
+                {
+                    "companyName": "Moby Dick Inc",
+                    "firstName": "sir Richard",
+                    "lastName": "Lion Heart",
+                    "nip": 5 * "69",
+                    "pesel": 11 * "7",
+                }
+            ],
+            "partners": [
+                {
+                    "companyName": "Moby Dick Inc",
+                    "firstName": "sir Richard",
+                    "lastName": "Lion Heart",
+                    "nip": 5 * "69",
+                    "pesel": 11 * "7",
+                }
+            ],
+            "registrationLegalDate": "2001-01-01",
+            "registrationDenialBasis": "Denial Basis",
+            "registrationDenialDate": "2002-02-02",
+            "restorationBasis": "Restoration Basis",
+            "restorationDate": "2003-03-03",
+            "removalBasis": "Removal Basis",
+            "removalDate": "2004-04-04",
+            "accountNumbers": [26 * "1"],
+            "hasVirtualAccounts": False,
+        }
+        self.example_subject = Subject(
+            name="Eminem",
+            nip="6969696969",
+            status_vat="Active",
+            regon="777777777",
+            pesel="77777777777",
+            krs="6969696969",
+            residence_address="8 mile",
+            working_address="8 mile",
+            representatives=[
+                Company(
+                    company_name="Moby Dick Inc",
+                    first_name="sir Richard",
+                    last_name="Lion Heart",
+                    nip="6969696969",
+                    pesel="77777777777",
+                )
+            ],
+            authorized_clerks=[
+                Company(
+                    company_name="Moby Dick Inc",
+                    first_name="sir Richard",
+                    last_name="Lion Heart",
+                    nip="6969696969",
+                    pesel="77777777777",
+                )
+            ],
+            partners=[
+                Company(
+                    company_name="Moby Dick Inc",
+                    first_name="sir Richard",
+                    last_name="Lion Heart",
+                    nip="6969696969",
+                    pesel="77777777777",
+                )
+            ],
+            registration_legal_date=datetime.date(2001, 1, 1),
+            registration_denial_basis="Denial Basis",
+            registration_denial_date=datetime.date(2002, 2, 2),
+            restoration_basis="Restoration Basis",
+            restoration_date=datetime.date(2003, 3, 3),
+            removal_basis="Removal Basis",
+            removal_date=datetime.date(2004, 4, 4),
+            account_numbers=["11111111111111111111111111"],
+            has_virtual_accounts=False,
+        )
+
+    @responses.activate
+    def test_search_nip(self, client):
+        """Test that proper nip and request identifier are returned for valid nip."""
+        self.set_up()
+        responses.add(
+            responses.GET,
+            "https://test-api.no/api/search/nip/6969696969?date=2001-01-01",
+            status=200,
+            json={
+                "result": {
+                    "subject": self.example_subject_dict,
+                    "requestId": "aa111-aa111aaa",
+                }
+            },
+            content_type="application/json",
+        )
+
+        assert client.search_nip("6969696969", datetime.date(2001, 1, 1)) == (
+            self.example_subject,
+            "aa111-aa111aaa",
+        )
