@@ -1,9 +1,9 @@
 """Vat register client module."""
-import inspect
 import datetime
 import functools
+import inspect
 from enum import Enum
-from typing import Iterable, List, Tuple, Union, Callable, Optional
+from typing import Callable, Iterable, List, Optional, Tuple, Union
 
 import requests
 
@@ -22,31 +22,33 @@ def handle_response(  # type: ignore
     response, request_type: RequestType, many: bool = False
 ) -> Union[Tuple[bool, str], Tuple[Union[Subject, List[Subject]], str]]:
     """Handle response from API."""
-    if response.status_code == 200:
-        result = response.json()["result"]
-        if request_type == RequestType.CHECK:
-            return result["accountAssigned"] == "TAK", result["requestId"]
-        elif request_type == RequestType.SEARCH:
-            key = "subjects" if many else "subject"
-            subject = SubjectSchema().load(result[key], many=many)
-            return subject, result["requestId"]
-    elif response.status_code == 400:
+    if response.status_code == 400:
         raise InvalidRequestData(ERROR_CODE_MAPPING[response.json()["code"]])
-    else:
+    elif response.status_code != 200:
         raise UnknownExternalApiError(response.status_code, response.text)
+
+    result = response.json()["result"]
+
+    if request_type == RequestType.CHECK:
+        return result["accountAssigned"] == "TAK", result["requestId"]
+    else:
+        subjects = SubjectSchema().load(
+            result["subjects" if many else "subject"], many=many
+        )
+        return subjects, result["requestId"]
 
 
 def api_request(url: str, request_type: RequestType, many: bool = False) -> Callable:
-    """TODO"""
+    """Decorate for api requests."""
 
-    def outter_wrapper(func):
-        """TODO"""
+    def outer_wrapper(func: Callable) -> Callable:
+        """Allow passing arguments."""
 
         @functools.wraps(func)
         def inner_wrapper(
             self, parameter: str, date: datetime.date, account: str = None
         ) -> Union[Tuple[bool, str], Tuple[Union[Subject, List[Subject]], str]]:
-            """TODO"""
+            """Fetch subject/subjects and request identifier from API."""
             nonlocal url
 
             url = prepare_url(account, date, parameter)
@@ -64,11 +66,7 @@ def api_request(url: str, request_type: RequestType, many: bool = False) -> Call
         ) -> str:
             """Evaluate path parameters."""
             nonlocal url
-
             if request_type == RequestType.CHECK:
-                url = url.replace(
-                    f"{{{inspect.getfullargspec(func).args[1]}}}", parameter
-                )
                 url = url.replace(
                     f"{{{inspect.getfullargspec(func).args[3]}}}",
                     account,  # type: ignore
@@ -76,15 +74,13 @@ def api_request(url: str, request_type: RequestType, many: bool = False) -> Call
             else:
                 if many and not isinstance(parameter, str):
                     parameter = ",".join(parameter)
-                url = url.replace(
-                    f"{{{inspect.getfullargspec(func).args[1]}}}", parameter
-                )
 
+            url = url.replace(f"{{{inspect.getfullargspec(func).args[1]}}}", parameter)
             return url.replace("{date}", str(date))
 
         return inner_wrapper
 
-    return outter_wrapper
+    return outer_wrapper
 
 
 class Client:
@@ -161,22 +157,23 @@ class Client:
         """Check if given account is assigned to subject with given regon."""
 
 
-client = Client(base_url="https://wl-api.mf.gov.pl")
-
-subject = client.search_nip("9542682325", "2019-09-30")
-print(subject)
-subjects = client.search_nips(["9542682325"], "2019-09-30")
-print(subjects)
-subject = client.search_regon("241234369", "2019-09-30")
-print(subject)
-subjects = client.search_regons(["241234369"], "2019-09-30")
-print(subjects)
-subject = client.search_account("23249000050000460042096848", "2019-09-30")
-print(subject)
-subject = client.search_accounts(["23249000050000460042096848"], "2019-09-30")
-print(subject)
-
-res = client.check_nip("9542682325", "2019-09-30", "23249000050000460042096848")
-print(res)
-res = client.check_regon("241234369", "2019-09-30", "23249000050000460042096848")
-print(res)
+# if __name__ == "__main__":
+#     client = Client(base_url="https://wl-api.mf.gov.pl")
+#
+#     subject = client.search_nip("9542682325", "2019-09-30")
+#     print(subject)
+#     subjects = client.search_nips(["9542682325"], "2019-09-30")
+#     print(subjects)
+#     subject = client.search_regon("241234369", "2019-09-30")
+#     print(subject)
+#     subjects = client.search_regons(["241234369"], "2019-09-30")
+#     print(subjects)
+#     subject = client.search_account("23249000050000460042096848", "2019-09-30")
+#     print(subject)
+#     subject = client.search_accounts(["23249000050000460042096848"], "2019-09-30")
+#     print(subject)
+#
+#     res = client.check_nip("9542682325", "2019-09-30", "23249000050000460042096848")
+#     print(res)
+#     res = client.check_regon("241234369", "2019-09-30", "23249000050000460042096848")
+#     print(res)
