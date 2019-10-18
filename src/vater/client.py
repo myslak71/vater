@@ -38,7 +38,9 @@ def handle_response(  # type: ignore
         return subjects, result["requestId"]
 
 
-def api_request(url: str, request_type: RequestType, many: bool = False) -> Callable:
+def api_request(
+    url_pattern: str, request_type: RequestType, many: bool = False
+) -> Callable:
     """Decorate for api requests."""
 
     def outer_wrapper(func: Callable) -> Callable:
@@ -49,8 +51,6 @@ def api_request(url: str, request_type: RequestType, many: bool = False) -> Call
             self, parameter: str, date: datetime.date, account: str = None
         ) -> Union[Tuple[bool, str], Tuple[Union[Subject, List[Subject]], str]]:
             """Fetch subject/subjects and request identifier from API."""
-            nonlocal url
-
             url = prepare_url(account, date, parameter)
 
             response = requests.get(
@@ -65,10 +65,10 @@ def api_request(url: str, request_type: RequestType, many: bool = False) -> Call
             account: Optional[str], date: datetime.date, parameter: str
         ) -> str:
             """Evaluate path parameters."""
-            nonlocal url
+            nonlocal url_pattern
 
             if request_type == RequestType.CHECK:
-                url = url.replace(
+                url_pattern = url_pattern.replace(
                     f"{{{inspect.getfullargspec(func).args[3]}}}",
                     account,  # type: ignore
                 )
@@ -76,8 +76,10 @@ def api_request(url: str, request_type: RequestType, many: bool = False) -> Call
                 if many and not isinstance(parameter, str):
                     parameter = ",".join(parameter)
 
-            url = url.replace(f"{{{inspect.getfullargspec(func).args[1]}}}", parameter)
-            return url.replace("{date}", str(date))
+            url_pattern = url_pattern.replace(
+                f"{{{inspect.getfullargspec(func).args[1]}}}", parameter
+            )
+            return url_pattern.replace("{date}", str(date))
 
         return inner_wrapper
 
@@ -156,25 +158,3 @@ class Client:
         self, regon: str, date: datetime.date, account: str
     ) -> Tuple[bool, str]:
         """Check if given account is assigned to subject with given regon."""
-
-
-if __name__ == "__main__":
-    client = Client(base_url="https://wl-api.mf.gov.pl")
-
-    subject = client.search_nip("9542682325", "2019-09-30")
-    print(subject)
-    subjects = client.search_nips(["9542682325"], "2019-09-30")
-    print(subjects)
-    subject = client.search_regon("241234369", "2019-09-30")
-    print(subject)
-    subjects = client.search_regons(["241234369"], "2019-09-30")
-    print(subjects)
-    subject = client.search_account("23249000050000460042096848", "2019-09-30")
-    print(subject)
-    subject = client.search_accounts(["23249000050000460042096848"], "2019-09-30")
-    print(subject)
-
-    res = client.check_nip("9542682325", "2019-09-30", "23249000050000460042096848")
-    print(res)
-    res = client.check_regon("241234369", "2019-09-30", "23249000050000460042096848")
-    print(res)

@@ -1,4 +1,4 @@
-"""waciarz package installation setup."""
+"""vater package installation setup."""
 import os
 
 from pkg_resources import parse_requirements
