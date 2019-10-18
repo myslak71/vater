@@ -125,3 +125,47 @@ class TestSubjectSearch:
             self.example_subject,
             "aa111-aa111aaa",
         )
+
+    @responses.activate
+    def test_search_nips(self, client):
+        """Test that proper nips and request identifier are returned for valid nips."""
+        self.set_up()
+        responses.add(
+            responses.GET,
+            "https://test-api.no/api/search/nips/6969696969?date=2001-01-01",
+            status=200,
+            json={
+                "result": {
+                    "subjects": [self.example_subject_dict],
+                    "requestId": "aa111-aa111aaa",
+                }
+            },
+            content_type="application/json",
+        )
+
+        assert client.search_nips("6969696969", datetime.date(2001, 1, 1)) == (
+            [self.example_subject],
+            "aa111-aa111aaa",
+        )
+
+    @responses.activate
+    def test_search_regon(self, client):
+        """Test that proper regon and request identifier are returned for valid regon."""
+        self.set_up()
+        responses.add(
+            responses.GET,
+            "https://test-api.no/api/search/regon/6969696969?date=2001-01-01",
+            status=200,
+            json={
+                "result": {
+                    "subject": self.example_subject_dict,
+                    "requestId": "aa111-aa111aaa",
+                }
+            },
+            content_type="application/json",
+        )
+
+        assert client.search_nip("6969696969", datetime.date(2001, 1, 1)) == (
+            self.example_subject,
+            "aa111-aa111aaa",
+        )
