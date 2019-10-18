@@ -6,14 +6,14 @@ from typing import Dict, List, Optional
 from marshmallow import Schema, fields, post_load
 
 
-@dataclass(eq=True)
+@dataclass
 class Company:
     """Class representing companies in vat payers register."""
 
-    company_name: str
-    first_name: str
-    last_name: str
-    nip: str
+    company_name: Optional[str]
+    first_name: Optional[str]
+    last_name: Optional[str]
+    nip: Optional[str]
     pesel: Optional[str]
 
 

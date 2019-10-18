@@ -3,7 +3,6 @@ import re
 from typing import List
 
 from vater.errors import InvalidNipsNumber
-from vater.models import Subject
 
 
 def validate_nips(nips: str) -> List[str]:
