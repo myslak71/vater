@@ -18,7 +18,7 @@ class RequestType(Enum):
     SEARCH = "search"
 
 
-def handle_response(  # type: ignore
+def handle_response(
     response, request_type: RequestType, many: bool = False
 ) -> Union[Tuple[bool, str], Tuple[Union[Subject, List[Subject]], str]]:
     """Handle API response."""
