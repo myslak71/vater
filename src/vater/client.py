@@ -27,7 +27,7 @@ def api_request(
                 handler.register_args(*args, **kwargs)
             return handler.result()
 
-          return wrapper_api_request
+        return wrapper_api_request
 
     return decorator_api_request
 
