@@ -13,8 +13,7 @@ isort==4.3.21
 
 # Testing
 ########################
-blinker==1.4
-factory-boy==2.12.0
+coveralls==1.8.2
 pytest==5.1.3
 pytest-cov==2.7.1
 responses==0.10.6
@@ -26,3 +25,8 @@ safety==1.8.5
 # Version release
 ########################
 bumpversion==0.5.3
+
+# Docs
+########################
+sphinx==2.2.0
+sphinx-autodoc-typehints==1.9.0
