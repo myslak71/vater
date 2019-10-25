@@ -16,6 +16,8 @@ def api_request(
         """Allow passing arguments."""
         handler = handler_class(url_pattern=url_pattern, **kwargs)
 
+        handler = handler_class(url_pattern=url_pattern, **kwargs)
+
         @functools.wraps(func)
         def wrapper_api_request(
             *args: tuple, **kwargs: dict
@@ -25,7 +27,7 @@ def api_request(
                 handler.register_args(*args, **kwargs)
             return handler.result()
 
-        return wrapper_api_request
+          return wrapper_api_request
 
     return decorator_api_request
 
