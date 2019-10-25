@@ -1,3 +1,10 @@
+.PHONY: black black_check coverage flake8 isort isort_check lint mypy safety unittests yamllint
+
+help: ## display available commands with description
+	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z_-]+:.*?## / {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST)
+
+.DEFAULT_GOAL := help
+
 black:  ## run black
 	black .
 
