@@ -17,7 +17,7 @@ isort:  ## run isort
 isort_check:  ## run isort check
 	isort . -rc --check
 
-lint: mypy flake8 yamllint  isort_check black_check safety # run all linters
+lint: mypy flake8 yamllint  isort_check black_check # run all linters
 
 mypy:  ## run mypy
 	mypy src --strict-optional
