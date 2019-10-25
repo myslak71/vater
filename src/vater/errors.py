@@ -47,7 +47,7 @@ class UnknownExternalApiError(Exception):
         self.status_code = status_code
         self.data = data
 
-    def __repr__(self) -> str:
+    def __str__(self) -> str:
         """Get error representation."""
         return (
             f"{self.__class__.__name__}: status code: {self.status_code}, "

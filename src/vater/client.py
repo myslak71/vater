@@ -29,8 +29,7 @@ def api_request(
                 if parameter not in kwargs and parameter != "self":
                     kwargs[parameter] = signature.parameters[parameter].default
 
-            if handler.args is None or handler.kwargs is None:
-                handler.register_args(*args, **kwargs)
+            handler.register_args(*args, **kwargs)
 
             return handler.result()
 
@@ -47,7 +46,6 @@ class Client:
         Set root API url.
 
         :param base_url: root url of the API
-        :type base_url: str
         """
         self.base_url = base_url
 
