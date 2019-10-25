@@ -121,7 +121,7 @@ class TestSubjectSearch:
             content_type="application/json",
         )
 
-        assert client.search_nip("6969696969", datetime.date(2001, 1, 1)) == (
+        assert client.search_nip(nip="6969696969", date=datetime.date(2001, 1, 1)) == (
             self.example_subject,
             "aa111-aa111aaa",
         )
@@ -143,10 +143,9 @@ class TestSubjectSearch:
             content_type="application/json",
         )
 
-        assert client.search_nips(["6969696969"], datetime.date(2001, 1, 1)) == (
-            [self.example_subject],
-            "aa111-aa111aaa",
-        )
+        assert client.search_nips(
+            nips=["6969696969"], date=datetime.date(2001, 1, 1)
+        ) == ([self.example_subject], "aa111-aa111aaa")
 
     @responses.activate
     def test_search_regon(self, client):
@@ -165,10 +164,9 @@ class TestSubjectSearch:
             content_type="application/json",
         )
 
-        assert client.search_regon("696969696", datetime.date(2001, 1, 1)) == (
-            self.example_subject,
-            "aa111-aa111aaa",
-        )
+        assert client.search_regon(
+            regon="696969696", date=datetime.date(2001, 1, 1)
+        ) == (self.example_subject, "aa111-aa111aaa")
 
     @responses.activate
     def test_search_regons(self, client):
@@ -187,10 +185,9 @@ class TestSubjectSearch:
             content_type="application/json",
         )
 
-        assert client.search_regons(["696969696"], datetime.date(2001, 1, 1)) == (
-            [self.example_subject],
-            "aa111-aa111aaa",
-        )
+        assert client.search_regons(
+            regons=["696969696"], date=datetime.date(2001, 1, 1)
+        ) == ([self.example_subject], "aa111-aa111aaa")
 
     @responses.activate
     def test_search_account(self, client):
@@ -209,10 +206,9 @@ class TestSubjectSearch:
             content_type="application/json",
         )
 
-        assert client.search_account(f"{13 * '69'}", datetime.date(2001, 1, 1)) == (
-            [self.example_subject],
-            "aa111-aa111aaa",
-        )
+        assert client.search_account(
+            account=f"{13 * '69'}", date=datetime.date(2001, 1, 1)
+        ) == ([self.example_subject], "aa111-aa111aaa")
 
     @responses.activate
     def test_search_accounts(self, client):
@@ -231,10 +227,9 @@ class TestSubjectSearch:
             content_type="application/json",
         )
 
-        assert client.search_accounts([f"{13 * '69'}"], datetime.date(2001, 1, 1)) == (
-            [self.example_subject],
-            "aa111-aa111aaa",
-        )
+        assert client.search_accounts(
+            accounts=[f"{13 * '69'}"], date=datetime.date(2001, 1, 1)
+        ) == ([self.example_subject], "aa111-aa111aaa")
 
     @responses.activate
     def test_check_nip(self, client):
@@ -252,7 +247,7 @@ class TestSubjectSearch:
         )
 
         assert client.check_nip(
-            "6969696969", datetime.date(2001, 1, 1), f"{13 * '69'}"
+            nip="6969696969", account=f"{13 * '69'}", date=datetime.date(2001, 1, 1)
         ) == (True, "aa111-aa111aaa")
 
     @responses.activate
@@ -271,5 +266,5 @@ class TestSubjectSearch:
         )
 
         assert client.check_regon(
-            "696969696", datetime.date(2001, 1, 1), f"{13 * '69'}"
+            regon="696969696", account=f"{13 * '69'}", date=datetime.date(2001, 1, 1)
         ) == (True, "aa111-aa111aaa")

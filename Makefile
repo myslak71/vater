@@ -20,7 +20,7 @@ isort_check:  ## run isort check
 lint: mypy flake8 yamllint  isort_check black_check safety # run all linters
 
 mypy:  ## run mypy
-	mypy src
+	mypy src --strict-optional
 
 safety:  ## run safety check
 	safety check -r requirements.txt -r requirements-dev.txt
