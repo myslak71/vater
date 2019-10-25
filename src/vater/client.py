@@ -14,7 +14,6 @@ def api_request(
 
     def decorator_api_request(func: Callable) -> Callable:
         """Allow passing arguments."""
-
         handler = handler_class(url_pattern=url_pattern, **kwargs)
 
         @functools.wraps(func)
