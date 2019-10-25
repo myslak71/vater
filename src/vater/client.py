@@ -12,13 +12,13 @@ def api_request(
 ) -> Callable:
     """Decorate for api requests."""
 
-    def outer_wrapper(func: Callable) -> Callable:
+    def decorator_api_request(func: Callable) -> Callable:
         """Allow passing arguments."""
 
         handler = handler_class(url_pattern=url_pattern, **kwargs)
 
         @functools.wraps(func)
-        def inner_wrapper(
+        def wrapper_api_request(
             *args: tuple, **kwargs: dict
         ) -> Union[Tuple[bool, str], Tuple[Union[Subject, List[Subject]], str]]:
             """Fetch subject/subjects and request identifier from API."""
@@ -26,9 +26,9 @@ def api_request(
                 handler.register_args(*args, **kwargs)
             return handler.result()
 
-        return inner_wrapper
+        return wrapper_api_request
 
-    return outer_wrapper
+    return decorator_api_request
 
 
 class Client:
