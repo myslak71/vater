@@ -22,6 +22,9 @@ class RequestType:
         """Interpolate endpoint url."""
         url = self.url_pattern
 
+        if self.kwargs["date"] is None:  # type: ignore
+            self.kwargs["date"] = datetime.date.today()  # type: ignore
+
         for key, value in self.kwargs.items():  # type: ignore
             if f"{{{key}}}" in self.url_pattern:
                 if isinstance(value, (str, datetime.date)):

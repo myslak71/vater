@@ -1,3 +1,10 @@
+.PHONY: black black_check coverage flake8 isort isort_check lint mypy safety unittests yamllint
+
+help: ## display available commands with description
+	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z_-]+:.*?## / {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST)
+
+.DEFAULT_GOAL := help
+
 black:  ## run black
 	black .
 
@@ -17,7 +24,7 @@ isort:  ## run isort
 isort_check:  ## run isort check
 	isort . -rc --check
 
-lint: mypy flake8 yamllint  isort_check black_check safety # run all linters
+lint: mypy flake8 yamllint  isort_check black_check ## run all linters
 
 mypy:  ## run mypy
 	mypy src --strict-optional
@@ -26,7 +33,7 @@ safety:  ## run safety check
 	safety check -r requirements.txt -r requirements-dev.txt
 
 unittests:  ## run pytest with coverage and -s flag for debugging
-	 pytest --cov=src tests/ --cov-branch -s
+	 pytest --cov=vater tests/ -s -vv
 
 yamllint:  ## run yamllint
 	yamllint .
