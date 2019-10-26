@@ -30,6 +30,7 @@ author = "myslak71"
 extensions = ["sphinx.ext.autodoc", "sphinx_autodoc_typehints"]
 autoapi_type = "python"
 autoapi_dirs = ["../src"]
+autoclass_content = "both"
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]

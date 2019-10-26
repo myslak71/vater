@@ -1,7 +1,7 @@
 """API request decorator module."""
 import functools
 import inspect
-from typing import Type, Callable, Union, Tuple, List
+from typing import Callable, List, Tuple, Type, Union
 
 from vater.models import Subject
 from vater.request_types import RequestType

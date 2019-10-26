@@ -1,7 +1,7 @@
 """Test fixtures."""
 import pytest
 
-from src.vater.client import Client
+from vater.client import Client
 
 
 @pytest.fixture

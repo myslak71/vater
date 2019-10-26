@@ -10,7 +10,10 @@ Welcome to vater's documentation!
    :maxdepth: 2
    :caption: Contents:
 
+   install
+   usage
    api
+   models
 
 Indices and tables
 ==================

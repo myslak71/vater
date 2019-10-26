@@ -1,12 +1,10 @@
 """Vat register client module."""
 import datetime
-import functools
-import inspect
-from typing import Callable, Iterable, List, Optional, Tuple, Type, Union
+from typing import Iterable, List, Optional, Tuple
 
 from vater.api_request import api_request
 from vater.models import Subject
-from vater.request_types import CheckRequest, RequestType, SearchRequest
+from vater.request_types import CheckRequest, SearchRequest
 
 
 class Client:
@@ -37,6 +35,7 @@ class Client:
     @api_request("/api/search/nips/{nips}?date={date}", SearchRequest, many=True)
     def search_nips(
         self,
+        *,
         nips: Iterable[str],
         date: Optional[datetime.date] = None,
         raw: bool = False,
@@ -52,7 +51,7 @@ class Client:
 
     @api_request("/api/search/regon/{regon}?date={date}", SearchRequest)
     def search_regon(
-        self, regon: str, date: Optional[datetime.date] = None, raw: bool = False
+        self, *, regon: str, date: Optional[datetime.date] = None, raw: bool = False
     ) -> Tuple[Subject, str]:
         """
         Get detailed vat payer information for given regon.
@@ -66,6 +65,7 @@ class Client:
     @api_request("/api/search/regons/{regons}?date={date}", SearchRequest, many=True)
     def search_regons(
         self,
+        *,
         regons: Iterable[str],
         date: Optional[datetime.date] = None,
         raw: bool = False,
@@ -85,7 +85,7 @@ class Client:
         many=True,  # API returns `subjects` key for single account search
     )
     def search_account(
-        self, account: str, date: Optional[datetime.date] = None, raw: bool = False
+        self, *, account: str, date: Optional[datetime.date] = None, raw: bool = False
     ) -> Tuple[Subject, str]:
         """
         Get detailed vat payer information for given bank account.
@@ -101,6 +101,7 @@ class Client:
     )
     def search_accounts(
         self,
+        *,
         accounts: Iterable[str],
         date: Optional[datetime.date] = None,
         raw: bool = False,
@@ -119,6 +120,7 @@ class Client:
     )
     def check_nip(
         self,
+        *,
         nip: str,
         account: str,
         date: Optional[datetime.date] = None,
@@ -139,6 +141,7 @@ class Client:
     )
     def check_regon(
         self,
+        *,
         regon: str,
         account: str,
         date: Optional[datetime.date] = None,
