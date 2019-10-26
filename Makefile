@@ -33,7 +33,7 @@ safety:  ## run safety check
 	safety check -r requirements.txt -r requirements-dev.txt
 
 unittests:  ## run pytest with coverage and -s flag for debugging
-	 pytest --cov=src tests/ -s -vv
+	 pytest --cov=src tests/ -s -vv --cov-report term-missing
 
 yamllint:  ## run yamllint
 	yamllint .
