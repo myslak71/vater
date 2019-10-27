@@ -1,6 +1,6 @@
 """Vat register client module."""
 import datetime
-from typing import List, Optional, Tuple
+from typing import List, Optional, Tuple, Iterable
 
 from vater.api_request import api_request
 from vater.models import Subject
@@ -42,7 +42,7 @@ class Client:
     def search_nips(
         self,
         *,
-        nips: List[str],
+        nips: Iterable[str],
         date: Optional[datetime.date] = None,
         raw: bool = False,
     ) -> Tuple[List[Subject], str]:
@@ -72,7 +72,7 @@ class Client:
     def search_regons(
         self,
         *,
-        regons: List[str],
+        regons: Iterable[str],
         date: Optional[datetime.date] = None,
         raw: bool = False,
     ) -> Tuple[List[Subject], str]:
@@ -108,7 +108,7 @@ class Client:
     def search_accounts(
         self,
         *,
-        accounts: List[str],
+        accounts: Iterable[str],
         date: Optional[datetime.date] = None,
         raw: bool = False,
     ) -> Tuple[List[Subject], str]:
