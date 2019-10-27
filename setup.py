@@ -34,7 +34,7 @@ setup(
     download_url=about["__download_url__"],
     package_dir={"": "src"},
     packages=find_packages("src"),
-    python_requires=">=3.7",
+    python_requires=">=3.6",
     install_requires=requirements,
     extras_require={"dev": requirements_dev},
     include_package_data=True,
