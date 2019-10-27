@@ -65,7 +65,6 @@ class MaximumArgumentsNumberExceeded(ClientError):
     def __init__(self, parameter_name: str, max: int):
         """Assign parameter name."""
         self.parameter_name = parameter_name
-        self.max = max
 
     def __str__(self):
         """Get error representation."""

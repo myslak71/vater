@@ -11,6 +11,8 @@ Python client providing convenient way to access polish VAT payers register API 
 
 #### Usage
 
+##### Scripts
+
 ```
 >>> import vater
 >>> client = vater.Client(base_url="https://wl-api.mf.gov.pl")
@@ -91,7 +93,7 @@ If you want to get raw server json just set `raw` to True:
 }
 ```
 
-By default the data is fetched from today date,
+By default the data is fetched from today's date,
 it can be changed by setting `date` argument:
 ```
 >>> import datetime
@@ -168,3 +170,19 @@ def check_regon(
 ```
 
 Keep in mind the API limits maximum number of requested subjects to 30.
+
+##### CLI
+
+| command | 
+| --- |
+| `vater search-nip [ACCOUNT]` |
+| `vater search-nip [ACCOUNTS]` |
+| `vater search-nip [NIP]` |
+| `vater search-nips [NIPS]` |
+| `vater search-nips [REGON]` |
+| `vater search-nips [REGONS]` |
+| `vater check-nip [NIP] [ACCOUNT]` |
+| `vater check-regon [REGON] [ACCOUNT]` |
+
+All commands allows to set `--date` parameter formatted as follows `YYYY-MM-DD`.
+Default value is today's date.

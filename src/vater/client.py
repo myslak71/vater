@@ -1,6 +1,6 @@
 """Vat register client module."""
 import datetime
-from typing import List, Optional, Tuple, Iterable
+from typing import Iterable, List, Optional, Tuple
 
 from vater.api_request import api_request
 from vater.models import Subject
@@ -16,7 +16,7 @@ class Client:
     is raised.
     """
 
-    def __init__(self, base_url: str, *, max_arguments: int = 30) -> None:
+    def __init__(self, base_url: str) -> None:
         """
         Set root API url.
 
