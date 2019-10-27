@@ -1,6 +1,6 @@
 """Vat register client module."""
 import datetime
-from typing import Iterable, List, Optional, Tuple
+from typing import List, Optional, Tuple
 
 from vater.api_request import api_request
 from vater.models import Subject
@@ -8,9 +8,15 @@ from vater.request_types import CheckRequest, SearchRequest
 
 
 class Client:
-    """Vat register client class."""
+    """
+    Vat register client class.
 
-    def __init__(self, base_url: str) -> None:
+    Currently the API limits maximum number of requested subjects
+    to 30, therefore if that number is exceeded MaximumArgumentsNumberExceeded
+    is raised.
+    """
+
+    def __init__(self, base_url: str, *, max_arguments: int = 30) -> None:
         """
         Set root API url.
 
@@ -36,7 +42,7 @@ class Client:
     def search_nips(
         self,
         *,
-        nips: Iterable[str],
+        nips: List[str],
         date: Optional[datetime.date] = None,
         raw: bool = False,
     ) -> Tuple[List[Subject], str]:
@@ -66,7 +72,7 @@ class Client:
     def search_regons(
         self,
         *,
-        regons: Iterable[str],
+        regons: List[str],
         date: Optional[datetime.date] = None,
         raw: bool = False,
     ) -> Tuple[List[Subject], str]:
@@ -102,7 +108,7 @@ class Client:
     def search_accounts(
         self,
         *,
-        accounts: Iterable[str],
+        accounts: List[str],
         date: Optional[datetime.date] = None,
         raw: bool = False,
     ) -> Tuple[List[Subject], str]:

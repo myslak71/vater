@@ -8,7 +8,7 @@ from marshmallow import Schema, fields, post_load
 
 @dataclass
 class Company:
-    """Class representing companies in vat payers register."""
+    """Class representing company in vat payers register."""
 
     company_name: Optional[str]
     first_name: Optional[str]
@@ -28,7 +28,7 @@ class CompanySchema(Schema):
 
     @post_load
     def make_company(self, data: Dict[str, str], **kwargs) -> Company:
-        """Create company instance."""
+        """Create a company instance."""
         return Company(**data)
 
 
@@ -96,5 +96,5 @@ class SubjectSchema(Schema):
 
     @post_load
     def make_subject(self, data: dict, **kwargs) -> Subject:
-        """Create subject instance."""
+        """Create a subject instance."""
         return Subject(**data)

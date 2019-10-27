@@ -2,7 +2,7 @@
 [![Build Status](https://travis-ci.org/myslak71/vater.svg?branch=master)](https://travis-ci.org/myslak71/vater)
 [![Coverage Status](https://coveralls.io/repos/github/myslak71/vater/badge.svg?branch=master)](https://coveralls.io/github/myslak71/vater?branch=master)
 
-Python client providing convenient way to access polish VAT payers register API.
+Python client providing convenient way to access polish VAT payers register API (version 1.3.0).
 
 #### Installation
 
@@ -165,3 +165,5 @@ def check_regon(
         raw: bool = False,
     ) -> Tuple[bool, str]:
 ```
+
+Keep in mind the API limits maximum number of requested subjects to 30.

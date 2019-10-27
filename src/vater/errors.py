@@ -27,16 +27,16 @@ ERROR_CODE_MAPPING = {
 }
 
 
-class InvalidRequestData(Exception):
+class ApiError(Exception):
+    """Base class for all API errors."""
+
+
+class InvalidRequestData(ApiError):
     """Base class for invalid request errors."""
 
 
 class InvalidField(InvalidRequestData):
     """Raised if known error from external API is returned."""
-
-
-class InvalidNipsNumber(InvalidRequestData):
-    """Raised when number of nips is invalid."""
 
 
 class UnknownExternalApiError(Exception):
@@ -52,4 +52,24 @@ class UnknownExternalApiError(Exception):
         return (
             f"{self.__class__.__name__}: status code: {self.status_code}, "
             f"data: {self.data}"
+        )
+
+
+class ClientError(Exception):
+    """Base class for all vater client errors."""
+
+
+class MaximumArgumentsNumberExceeded(ClientError):
+    """Raised when arguments number exceeds allowed maximum."""
+
+    def __init__(self, parameter_name: str, max: int):
+        """Assign parameter name."""
+        self.parameter_name = parameter_name
+        self.max = max
+
+    def __str__(self):
+        """Get error representation."""
+        return (
+            f"{self.__class__.__name__}: number of {self.parameter_name} "
+            f"exceeds allowed maximum: {self.max}"
         )

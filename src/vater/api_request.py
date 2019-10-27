@@ -10,7 +10,7 @@ from vater.request_types import RequestType
 def api_request(
     url_pattern: str, handler_class: Type[RequestType], **kwargs
 ) -> Callable:
-    """Decorate for api requests."""
+    """Initialize request handler."""
     handler = handler_class(url_pattern=url_pattern, **kwargs)
 
     def decorator_api_request(func: Callable) -> Callable:
@@ -20,7 +20,7 @@ def api_request(
         def wrapper_api_request(
             *args: tuple, **kwargs: dict
         ) -> Union[Tuple[bool, str], Tuple[Union[Subject, List[Subject]], str]]:
-            """Fetch subject/subjects and request identifier from API."""
+            """Return handler result."""
             signature = inspect.signature(func)
 
             # add not present keywords with their default value
