@@ -1,6 +1,7 @@
 # Vater
 [![Build Status](https://travis-ci.org/myslak71/vater.svg?branch=master)](https://travis-ci.org/myslak71/vater)
 [![Coverage Status](https://coveralls.io/repos/github/myslak71/vater/badge.svg?branch=master)](https://coveralls.io/github/myslak71/vater?branch=master)
+![image](https://img.shields.io/badge/version-0.1.0-yellow)
 
 Python client providing convenient way to access polish VAT payers register API (version 1.3.0).
 
@@ -9,6 +10,8 @@ Python client providing convenient way to access polish VAT payers register API 
 `pip install vater`
 
 #### Usage
+
+##### Scripts
 
 ```
 >>> import vater
@@ -90,7 +93,7 @@ If you want to get raw server json just set `raw` to True:
 }
 ```
 
-By default the data is fetched from today date,
+By default the data is fetched from today's date,
 it can be changed by setting `date` argument:
 ```
 >>> import datetime
@@ -167,3 +170,19 @@ def check_regon(
 ```
 
 Keep in mind the API limits maximum number of requested subjects to 30.
+
+##### CLI
+
+| command | 
+| --- |
+| `vater search-nip [ACCOUNT]` |
+| `vater search-nip [ACCOUNTS]` |
+| `vater search-nip [NIP]` |
+| `vater search-nips [NIPS]` |
+| `vater search-nips [REGON]` |
+| `vater search-nips [REGONS]` |
+| `vater check-nip [NIP] [ACCOUNT]` |
+| `vater check-regon [REGON] [ACCOUNT]` |
+
+All commands allows to set `--date` parameter formatted as follows `YYYY-MM-DD`.
+Default value is today's date.

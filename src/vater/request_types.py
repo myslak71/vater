@@ -5,7 +5,12 @@ from typing import List, Tuple, Union
 import requests
 from requests import Response
 
-from vater.errors import ERROR_CODE_MAPPING, InvalidRequestData, UnknownExternalApiError
+from vater.errors import (
+    ERROR_CODE_MAPPING,
+    InvalidRequestData,
+    MaximumArgumentsNumberExceeded,
+    UnknownExternalApiError,
+)
 from vater.models import Subject, SubjectSchema
 
 
@@ -76,13 +81,24 @@ class CheckRequest(RequestType):
 class SearchRequest(RequestType):
     """Class for search requests type."""
 
+    PARAM_LIMIT = 30
+
     def __init__(self, url_pattern: str, many: bool = False) -> None:
         """Initialize additional `many` attribute."""
         super().__init__(url_pattern)
         self.many = many
 
+    def validate(self) -> None:
+        """Validate given parameters."""
+        parameter = next(iter(self.kwargs))  # type: ignore
+
+        if self.many and len(self.kwargs[parameter]) > self.PARAM_LIMIT:  # type: ignore
+            raise MaximumArgumentsNumberExceeded(parameter, self.PARAM_LIMIT)
+
     def result(self) -> Union[dict, Tuple[Union[List[Subject], Subject], str]]:
         """Return subject/subjects mapped to the specific parameter and request id."""
+        self.validate()
+
         response = self.send_request()
 
         if self.kwargs.get("raw"):  # type: ignore
