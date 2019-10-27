@@ -34,7 +34,7 @@ setup(
     download_url=about["__download_url__"],
     package_dir={"": "src"},
     packages=find_packages("src"),
-    python_requires=">=3.6",
+    python_requires=">=3.7",
     install_requires=requirements,
     extras_require={"dev": requirements_dev},
     include_package_data=True,
@@ -46,7 +46,6 @@ setup(
         "Programming Language :: Python",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.7",
-        "Programming Language :: Python :: 3.6",
     ],
     entry_points={"console_scripts": "vater=vater.cli:cli"},
 )
