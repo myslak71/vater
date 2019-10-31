@@ -108,8 +108,7 @@ String may also be passed as a `date`:
 Available methods (note that all arguments except `self` are keyword only):
 ```
 def search_nip(
-        self, *, nip: str, date: Optional[datetime.date] = None, raw: bool = False
-    ) -> Tuple[Subject, str]:
+    *, nip: str, date: [datetime.date] = datetime.date.today(), raw: bool = False) -> Tuple[Subject, str]:
 ```
 ```
 def search_nips(

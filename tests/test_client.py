@@ -5,8 +5,14 @@ import pytest
 import responses
 from freezegun import freeze_time
 
-from vater.errors import ERROR_CODE_MAPPING, InvalidRequestData, UnknownExternalApiError
+from vater.errors import (
+    ERROR_CODE_MAPPING,
+    InvalidRequestData,
+    MaximumArgumentsNumberExceeded,
+    UnknownExternalApiError,
+)
 from vater.models import Company, Subject
+from vater.request_types import SearchRequest
 
 
 class TestSubjectSearch:
@@ -383,4 +389,16 @@ class TestSubjectSearch:
         assert (
             'UnknownExternalApiError: status code: 500, data: {"message": "Uknown error"}'
             in str(exception_info.value)
+        )
+
+    def test_max_args_exceeded(self, client):
+        """Test that `MaximumArgumentsNumberExceeded` when number of args exceeds allowed maximum."""
+        with pytest.raises(MaximumArgumentsNumberExceeded) as exception_info:
+            client.search_nips(
+                raw=True, nips=["7171717171"] * (SearchRequest.PARAM_LIMIT + 1)
+            )
+
+        assert str(exception_info.value) == (
+            "MaximumArgumentsNumberExceeded: number of nips exceeds allowed maximum: "
+            f"{SearchRequest.PARAM_LIMIT}"
         )

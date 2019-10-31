@@ -23,9 +23,10 @@ responses==0.10.6
 ########################
 safety==1.8.5
 
-# Version release
+# Releasing
 ########################
 bumpversion==0.5.3
+towncrier==19.2.0
 
 # Docs
 ########################
