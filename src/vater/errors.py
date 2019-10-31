@@ -62,13 +62,14 @@ class ClientError(Exception):
 class MaximumArgumentsNumberExceeded(ClientError):
     """Raised when arguments number exceeds allowed maximum."""
 
-    def __init__(self, parameter_name: str, max: int):
+    def __init__(self, parameter_name: str, maximum: int) -> None:
         """Assign parameter name."""
         self.parameter_name = parameter_name
+        self.maximum = maximum
 
-    def __str__(self):
+    def __str__(self) -> str:
         """Get error representation."""
         return (
             f"{self.__class__.__name__}: number of {self.parameter_name} "
-            f"exceeds allowed maximum: {self.max}"
+            f"exceeds allowed maximum: {self.maximum}"
         )

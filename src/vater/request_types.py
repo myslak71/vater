@@ -90,9 +90,12 @@ class SearchRequest(RequestType):
 
     def validate(self) -> None:
         """Validate given parameters."""
-        parameter = next(iter(self.kwargs))  # type: ignore
+        if not self.many:
+            return
 
-        if self.many and len(self.kwargs[parameter]) > self.PARAM_LIMIT:  # type: ignore
+        parameter = ({*self.kwargs} - {"raw", "date"}).pop()  # type: ignore
+
+        if len(self.kwargs[parameter]) > self.PARAM_LIMIT:  # type: ignore
             raise MaximumArgumentsNumberExceeded(parameter, self.PARAM_LIMIT)
 
     def result(self) -> Union[dict, Tuple[Union[List[Subject], Subject], str]]:
