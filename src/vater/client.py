@@ -12,7 +12,7 @@ class Client:
     Vat register client class.
 
     Currently the API limits maximum number of requested subjects
-    to 30, therefore if that number is exceeded MaximumArgumentsNumberExceeded
+    to 30, therefore if that number is exceeded MaximumParameterNumberExceeded
     is raised.
     """
 
@@ -26,7 +26,7 @@ class Client:
 
     @api_request("/api/search/nip/{nip}?date={date}", SearchRequest)
     def search_nip(
-        self, *, nip: str, date: Optional[datetime.date] = None, raw: bool = False
+        self, nip: str, *, date: Optional[datetime.date] = None, raw: bool = False
     ) -> Tuple[Subject, str]:
         """
         Get detailed vat payer information for given nip.
@@ -41,8 +41,8 @@ class Client:
     @api_request("/api/search/nips/{nips}?date={date}", SearchRequest, many=True)
     def search_nips(
         self,
-        *,
         nips: Iterable[str],
+        *,
         date: Optional[datetime.date] = None,
         raw: bool = False,
     ) -> Tuple[List[Subject], str]:
@@ -57,7 +57,7 @@ class Client:
 
     @api_request("/api/search/regon/{regon}?date={date}", SearchRequest)
     def search_regon(
-        self, *, regon: str, date: Optional[datetime.date] = None, raw: bool = False
+        self, regon: str, *, date: Optional[datetime.date] = None, raw: bool = False
     ) -> Tuple[Subject, str]:
         """
         Get detailed vat payer information for given regon.
@@ -71,8 +71,8 @@ class Client:
     @api_request("/api/search/regons/{regons}?date={date}", SearchRequest, many=True)
     def search_regons(
         self,
-        *,
         regons: Iterable[str],
+        *,
         date: Optional[datetime.date] = None,
         raw: bool = False,
     ) -> Tuple[List[Subject], str]:
@@ -91,7 +91,7 @@ class Client:
         many=True,  # API returns `subjects` key for single account search
     )
     def search_account(
-        self, *, account: str, date: Optional[datetime.date] = None, raw: bool = False
+        self, account: str, *, date: Optional[datetime.date] = None, raw: bool = False
     ) -> Tuple[Subject, str]:
         """
         Get detailed vat payer information for given bank account.
@@ -107,8 +107,8 @@ class Client:
     )
     def search_accounts(
         self,
-        *,
         accounts: Iterable[str],
+        *,
         date: Optional[datetime.date] = None,
         raw: bool = False,
     ) -> Tuple[List[Subject], str]:
@@ -126,8 +126,8 @@ class Client:
     )
     def check_nip(
         self,
-        *,
         nip: str,
+        *,
         account: str,
         date: Optional[datetime.date] = None,
         raw: bool = False,
@@ -147,8 +147,8 @@ class Client:
     )
     def check_regon(
         self,
-        *,
         regon: str,
+        *,
         account: str,
         date: Optional[datetime.date] = None,
         raw: bool = False,
