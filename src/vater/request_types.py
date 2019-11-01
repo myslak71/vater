@@ -8,7 +8,7 @@ from requests import Response
 from vater.errors import (
     ERROR_CODE_MAPPING,
     InvalidRequestData,
-    MaximumArgumentsNumberExceeded,
+    MaximumParameterNumberExceeded,
     UnknownExternalApiError,
 )
 from vater.models import Subject, SubjectSchema
@@ -19,30 +19,29 @@ class RequestType:
 
     def __init__(self, url_pattern: str, *args, **kwargs) -> None:
         """Initialize instance parameters."""
+        self.params = None
         self.url_pattern = url_pattern
-        self.args = None
-        self.kwargs = None
 
     def _get_url(self) -> None:
         """Interpolate endpoint url."""
         url = self.url_pattern
 
-        if self.kwargs["date"] is None:  # type: ignore
-            self.kwargs["date"] = datetime.date.today()  # type: ignore
+        if self.params["date"] is None:  # type: ignore
+            self.params["date"] = datetime.date.today()  # type: ignore
 
-        for key, value in self.kwargs.items():  # type: ignore
+        for key, value in self.params.items():  # type: ignore
             if f"{{{key}}}" in self.url_pattern:
                 if isinstance(value, (str, datetime.date)):
                     url = url.replace(f"{{{key}}}", str(value))
                 else:
                     url = url.replace(f"{{{key}}}", ",".join(value))
 
-        self.url = self.args[0].base_url + url  # type: ignore
+        self.url = self.client.base_url + url  # type: ignore
 
-    def register_args(self, *args, **kwargs):
+    def register_params(self, **params):
         """Register parameters to the instance."""
-        self.args = args
-        self.kwargs = kwargs
+        self.client = params.pop("client")
+        self.params = params
 
     def validate(self) -> None:
         """Validate registered parameters."""
@@ -70,7 +69,7 @@ class CheckRequest(RequestType):
         """Return check result if account is assigned to the subject and request id."""
         response = self.send_request()
 
-        if self.kwargs.get("raw"):  # type: ignore
+        if self.params.get("raw"):  # type: ignore
             return response.json()
 
         result = response.json()["result"]
@@ -93,10 +92,10 @@ class SearchRequest(RequestType):
         if not self.many:
             return
 
-        parameter = ({*self.kwargs} - {"raw", "date"}).pop()  # type: ignore
+        param = ({*self.params} - {"raw", "date"}).pop()  # type: ignore
 
-        if len(self.kwargs[parameter]) > self.PARAM_LIMIT:  # type: ignore
-            raise MaximumArgumentsNumberExceeded(parameter, self.PARAM_LIMIT)
+        if len(self.params[param]) > self.PARAM_LIMIT:  # type: ignore
+            raise MaximumParameterNumberExceeded(param, self.PARAM_LIMIT)
 
     def result(self) -> Union[dict, Tuple[Union[List[Subject], Subject], str]]:
         """Return subject/subjects mapped to the specific parameter and request id."""
@@ -104,7 +103,7 @@ class SearchRequest(RequestType):
 
         response = self.send_request()
 
-        if self.kwargs.get("raw"):  # type: ignore
+        if self.params.get("raw"):  # type: ignore
             return response.json()
 
         result = response.json()["result"]

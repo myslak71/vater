@@ -8,7 +8,7 @@ from freezegun import freeze_time
 from vater.errors import (
     ERROR_CODE_MAPPING,
     InvalidRequestData,
-    MaximumArgumentsNumberExceeded,
+    MaximumParameterNumberExceeded,
     UnknownExternalApiError,
 )
 from vater.models import Company, Subject
@@ -130,7 +130,7 @@ class TestSubjectSearch:
             content_type="application/json",
         )
 
-        assert client.search_nip(nip="6969696969", date=datetime.date(2001, 1, 1)) == (
+        assert client.search_nip("6969696969", date=datetime.date(2001, 1, 1)) == (
             self.example_subject,
             "aa111-aa111aaa",
         )
@@ -392,13 +392,13 @@ class TestSubjectSearch:
         )
 
     def test_max_args_exceeded(self, client):
-        """Test that `MaximumArgumentsNumberExceeded` when number of args exceeds allowed maximum."""
-        with pytest.raises(MaximumArgumentsNumberExceeded) as exception_info:
+        """Test that `MaximumParameterNumberExceeded` when number of args exceeds allowed maximum."""
+        with pytest.raises(MaximumParameterNumberExceeded) as exception_info:
             client.search_nips(
                 raw=True, nips=["7171717171"] * (SearchRequest.PARAM_LIMIT + 1)
             )
 
         assert str(exception_info.value) == (
-            "MaximumArgumentsNumberExceeded: number of nips exceeds allowed maximum: "
+            "MaximumParameterNumberExceeded: number of nips exceeds allowed maximum: "
             f"{SearchRequest.PARAM_LIMIT}"
         )

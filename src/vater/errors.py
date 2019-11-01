@@ -59,7 +59,7 @@ class ClientError(Exception):
     """Base class for all vater client errors."""
 
 
-class MaximumArgumentsNumberExceeded(ClientError):
+class MaximumParameterNumberExceeded(ClientError):
     """Raised when arguments number exceeds allowed maximum."""
 
     def __init__(self, parameter_name: str, maximum: int) -> None:

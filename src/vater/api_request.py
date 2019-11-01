@@ -21,14 +21,24 @@ def api_request(
             *args: tuple, **kwargs: dict
         ) -> Union[Tuple[bool, str], Tuple[Union[Subject, List[Subject]], str]]:
             """Return handler result."""
-            signature = inspect.signature(func)
+            argspec = inspect.getfullargspec(func)
+
+            params: dict = {
+                "client": args[0],
+                **kwargs,
+                **{
+                    key: value
+                    for key, value in zip(argspec.args, args)
+                    if key != "self"
+                },
+            }
 
             # add not present keywords with their default value
-            for parameter in signature.parameters:
-                if parameter not in kwargs and parameter != "self":
-                    kwargs[parameter] = signature.parameters[parameter].default
+            for param in argspec.kwonlyargs:
+                if param not in kwargs and param != "self":
+                    params[param] = argspec.kwonlydefaults[param]
 
-            handler.register_args(*args, **kwargs)
+            handler.register_params(**params)
 
             return handler.result()
 
