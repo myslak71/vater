@@ -108,41 +108,41 @@ String may also be passed as a `date`:
 Available methods:
 ```
 def search_nip(
-    *, nip: str, date: [datetime.date] = datetime.date.today(), raw: bool = False) -> Tuple[Subject, str]:
+    nip: str, *, date: [datetime.date] = datetime.date.today(), raw: bool = False) -> Tuple[Subject, str]:
 ```
 ```
 def search_nips(
         self,
-        *,
         nips: Iterable[str],
+        *,
         date: Optional[datetime.date] = None,
         raw: bool = False,
     ) -> Tuple[List[Subject], str]:
 ```
 ```
 def search_regon(
-        self, *, regon: str, date: Optional[datetime.date] = None, raw: bool = False
+        self, regon: str, *, date: Optional[datetime.date] = None, raw: bool = False
     ) -> Tuple[Subject, str]:
 ```
 ```
 def search_regons(
         self,
-        *,
         regons: Iterable[str],
+        *,
         date: Optional[datetime.date] = None,
         raw: bool = False,
     ) -> Tuple[List[Subject], str]:
 ```
 ```
 def search_account(
-        self, *, account: str, date: Optional[datetime.date] = None, raw: bool = False
+        self, account: str, *, date: Optional[datetime.date] = None, raw: bool = False
     ) -> Tuple[Subject, str]:
 ```
 ```
 def search_accounts(
         self,
-        *,
         accounts: Iterable[str],
+        *,
         date: Optional[datetime.date] = None,
         raw: bool = False,
     ) -> Tuple[List[Subject], str]:
@@ -150,8 +150,8 @@ def search_accounts(
 ```
 def check_nip(
         self,
-        *,
         nip: str,
+        *,
         account: str,
         date: Optional[datetime.date] = None,
         raw: bool = False,
@@ -160,8 +160,8 @@ def check_nip(
 ```
 def check_regon(
         self,
-        *,
         regon: str,
+        *,
         account: str,
         date: Optional[datetime.date] = None,
         raw: bool = False,
