@@ -8,11 +8,11 @@ from vater.request_types import CheckRequest, SearchRequest
 from vater.validators import (
     account_validator,
     accounts_validator,
+    date_validator,
     nip_validator,
     nips_validator,
     regon_validator,
     regons_validator,
-    date_validator,
 )
 
 
