@@ -62,14 +62,27 @@ class ClientError(Exception):
 class MaximumParameterNumberExceeded(ClientError):
     """Raised when arguments number exceeds allowed maximum."""
 
-    def __init__(self, parameter_name: str, maximum: int) -> None:
+    def __init__(self, param: str, maximum: int) -> None:
         """Assign parameter name."""
-        self.parameter_name = parameter_name
+        self.param = param
         self.maximum = maximum
 
     def __str__(self) -> str:
         """Get error representation."""
         return (
-            f"{self.__class__.__name__}: number of {self.parameter_name} "
+            f"{self.__class__.__name__}: number of {self.param} "
             f"exceeds allowed maximum: {self.maximum}"
         )
+
+
+class ValidationError(ClientError):
+    """Raised during parameter validation."""
+
+    def __init__(self, param, msg):
+        """Initialize the instance."""
+        self.param = param
+        self.msg = msg
+
+    def __str__(self) -> str:
+        """Get validation error representation."""
+        return f"{self.__class__.__name__}: {self.param} {self.msg}"

@@ -105,7 +105,7 @@ String may also be passed as a `date`:
 >>> client.search_nip(nip="1111111111", date='2001-01-01')
 ```
 
-Available methods (note that all arguments except `self` are keyword only):
+Available methods:
 ```
 def search_nip(
     *, nip: str, date: [datetime.date] = datetime.date.today(), raw: bool = False) -> Tuple[Subject, str]:
