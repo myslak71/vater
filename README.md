@@ -183,5 +183,5 @@ Keep in mind the API limits maximum number of requested subjects to 30.
 | `vater check-nip [NIP] [ACCOUNT]` |
 | `vater check-regon [REGON] [ACCOUNT]` |
 
-All commands allows to set `--date` parameter formatted as follows `YYYY-MM-DD`.
+Each command allows to set `--date` parameter formatted as follows `YYYY-MM-DD`.
 Default value is today's date.
