@@ -17,19 +17,18 @@ from vater.models import Subject, SubjectSchema
 class RequestType:
     """Base class for all request types."""
 
-    def __init__(self, url_pattern: str, *args, **kwargs) -> None:
+    def __init__(self, url_pattern: str, *args, validators=None, **kwargs) -> None:
         """Initialize instance parameters."""
         self.params = None
         self.url_pattern = url_pattern
+        self.validators = {} if validators is None else validators
+        self.validated_params: dict = {}
 
     def _get_url(self) -> None:
         """Interpolate endpoint url."""
         url = self.url_pattern
 
-        if self.params["date"] is None:  # type: ignore
-            self.params["date"] = datetime.date.today()  # type: ignore
-
-        for key, value in self.params.items():  # type: ignore
+        for key, value in self.validated_params.items():  # type: ignore
             if f"{{{key}}}" in self.url_pattern:
                 if isinstance(value, (str, datetime.date)):
                     url = url.replace(f"{{{key}}}", str(value))
@@ -43,8 +42,17 @@ class RequestType:
         self.client = params.pop("client")
         self.params = params
 
+        if self.params["date"] is None:  # type: ignore
+            self.params["date"] = datetime.date.today()  # type: ignore
+
     def validate(self) -> None:
-        """Validate registered parameters."""
+        """Validate given parameters."""
+        for param, value in self.params.items():  # type: ignore
+            try:
+                for validator in self.validators[param]:
+                    self.validated_params[param] = validator(value)
+            except KeyError:
+                self.validated_params[param] = value
 
     def send_request(self) -> Response:
         """Get response from the API."""
@@ -67,6 +75,7 @@ class CheckRequest(RequestType):
 
     def result(self) -> Union[dict, Tuple[bool, str]]:
         """Return check result if account is assigned to the subject and request id."""
+        self.validate()
         response = self.send_request()
 
         if self.params.get("raw"):  # type: ignore
@@ -82,13 +91,15 @@ class SearchRequest(RequestType):
 
     PARAM_LIMIT = 30
 
-    def __init__(self, url_pattern: str, many: bool = False) -> None:
+    def __init__(self, url_pattern: str, many: bool = False, *args, **kwargs) -> None:
         """Initialize additional `many` attribute."""
-        super().__init__(url_pattern)
+        super().__init__(url_pattern, *args, **kwargs)
         self.many = many
 
     def validate(self) -> None:
         """Validate given parameters."""
+        super().validate()
+
         if not self.many:
             return
 
@@ -100,7 +111,6 @@ class SearchRequest(RequestType):
     def result(self) -> Union[dict, Tuple[Union[List[Subject], Subject], str]]:
         """Return subject/subjects mapped to the specific parameter and request id."""
         self.validate()
-
         response = self.send_request()
 
         if self.params.get("raw"):  # type: ignore
