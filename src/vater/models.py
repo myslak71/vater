@@ -1,7 +1,7 @@
 """Schemas and models module."""
 import datetime
 from dataclasses import dataclass
-from typing import Dict, List, Optional
+from typing import Any, Dict, List, Optional
 
 from marshmallow import Schema, fields, post_load
 
@@ -27,7 +27,7 @@ class CompanySchema(Schema):
     pesel = fields.String(allow_none=True, required=True)
 
     @post_load
-    def make_company(self, data: Dict[str, str], **kwargs) -> Company:
+    def make_company(self, data: Dict[str, str], **kwargs: Any) -> Company:
         """Create a company instance."""
         return Company(**data)
 
@@ -95,6 +95,6 @@ class SubjectSchema(Schema):
     )
 
     @post_load
-    def make_subject(self, data: dict, **kwargs) -> Subject:
+    def make_subject(self, data: dict, **kwargs: Any) -> Subject:
         """Create a subject instance."""
         return Subject(**data)

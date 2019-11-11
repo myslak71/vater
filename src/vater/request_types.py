@@ -1,6 +1,7 @@
 """This module contains logic for different API request types."""
 import datetime
-from typing import List, Tuple, Union
+from abc import ABC, abstractmethod
+from typing import Any, Dict, List, Tuple, Union
 
 import requests
 from requests import Response
@@ -14,12 +15,12 @@ from vater.errors import (
 from vater.models import Subject, SubjectSchema
 
 
-class RequestType:
+class RequestType(ABC):
     """Base class for all request types."""
 
     def __init__(self, url_pattern: str, *args, validators=None, **kwargs) -> None:
         """Initialize instance parameters."""
-        self.params = None
+        self.params: Dict[str, Any] = {}
         self.url_pattern = url_pattern
         self.validators = {} if validators is None else validators
         self.validated_params: dict = {}
@@ -37,10 +38,10 @@ class RequestType:
 
         self.url = self.client.base_url + url  # type: ignore
 
-    def register_params(self, **params):
+    def register_params(self, **kwargs: Any) -> None:
         """Register parameters to the instance."""
-        self.client = params.pop("client")
-        self.params = params
+        self.client = kwargs.pop("client")
+        self.params = kwargs
 
         if self.params["date"] is None:  # type: ignore
             self.params["date"] = datetime.date.today()  # type: ignore
@@ -66,6 +67,7 @@ class RequestType:
 
         return response
 
+    @abstractmethod
     def result(self):
         """Return request result."""
 

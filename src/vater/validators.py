@@ -31,7 +31,7 @@ def nips_validator(values_iter: Iterable[str]) -> Generator[str, None, None]:
     return (nip_validator(value) for value in values_iter)
 
 
-def regon_validator(value: str):
+def regon_validator(value: str) -> str:
     """Check if a given value is valid regon number."""
     valid_len = (9, 14)
     weights: Dict[int, tuple] = {
@@ -73,7 +73,7 @@ def accounts_validator(values_iter: Iterable[str]) -> Generator[str, None, None]
     return (account_validator(value) for value in values_iter)
 
 
-def date_validator(value: Union[datetime.date, str]):
+def date_validator(value: Union[datetime.date, str]) -> str:
     """Check if a given value may be evaluated to `YYYY-MM-DD` date format."""
 
     reg = re.compile(r"([12]\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01]))$")

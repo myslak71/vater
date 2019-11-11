@@ -2,6 +2,7 @@
 
 from typing import Optional
 
+# Following code mapping comes from API docs
 ERROR_CODE_MAPPING = {
     "WL-100": "Unexpected server error.",
     "WL-101": "Date cannot be empty.",
@@ -78,7 +79,7 @@ class MaximumParameterNumberExceeded(ClientError):
 class ValidationError(ClientError):
     """Raised during parameter validation."""
 
-    def __init__(self, param, msg):
+    def __init__(self, param, msg) -> None:
         """Initialize the instance."""
         self.param = param
         self.msg = msg

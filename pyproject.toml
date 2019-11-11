@@ -1,2 +1,9 @@
 [tool.black]
-exclude = 'venv'
+exclude = "venv"
+
+[tool.isort]
+include_trailing_comma = "True"
+known_first_party = "vater"
+line_length = 90
+multi_line_output = 3
+skip = "venv"
