@@ -40,7 +40,7 @@ class Client:
     )
     def search_nip(
         self, nip: str, *, date: Optional[datetime.date] = None, raw: bool = False
-    ) -> Tuple[Subject, str]:
+    ) -> Tuple[Optional[Subject], str]:
         """
         Get detailed vat payer information for given nip.
 
@@ -80,7 +80,7 @@ class Client:
     )
     def search_regon(
         self, regon: str, *, date: Optional[datetime.date] = None, raw: bool = False
-    ) -> Tuple[Subject, str]:
+    ) -> Tuple[Optional[Subject], str]:
         """
         Get detailed vat payer information for given regon.
 

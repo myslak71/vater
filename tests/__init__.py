@@ -1,1 +1,1 @@
-"""Test for vater."""
+"""Tests for vater."""

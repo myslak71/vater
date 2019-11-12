@@ -392,7 +392,7 @@ class TestSubjectSearch:
             responses.GET,
             f"https://wl-test.mf.gov.pl/api/search/nip/{SAMPLE_NIP}?date={SAMPLE_DATE}",
             status=500,
-            json={"message": "Uknown error"},
+            json={"message": "Unknown error"},
             content_type="application/json",
         )
 
@@ -400,9 +400,9 @@ class TestSubjectSearch:
             client.search_nip(SAMPLE_NIP, date=datetime.date(2001, 1, 1), raw=True)
 
         assert (
-            'UnknownExternalApiError: status code: 500, data: {"message": "Uknown error"}'
-            in str(exception_info.value)
-        )
+            "UnknownExternalApiError: status code: 500, data: "
+            '{"message": "Unknown error"}'
+        ) in str(exception_info.value)
 
     def test_max_args_exceeded(self, client):
         """Test that error is raised when number of args exceeds allowed maximum."""
@@ -512,7 +512,7 @@ class TestSubjectSearch:
             ("", "ValidationError: account `` invalid length: 0, required 26"),
             (
                 "0" * 27,
-                f"ValidationError: account `{'0'*27}` invalid length: 27, required 26",
+                f"ValidationError: account `{'0' * 27}` invalid length: 27, required 26",
             ),
         ),
     )
@@ -533,7 +533,7 @@ class TestSubjectSearch:
             ([""], "ValidationError: account `` invalid length: 0, required 26"),
             (
                 ["0" * 27],
-                f"ValidationError: account `{'0'*27}` invalid length: 27, required 26",
+                f"ValidationError: account `{'0' * 27}` invalid length: 27, required 26",
             ),
         ),
     )
@@ -569,3 +569,19 @@ class TestSubjectSearch:
             client.search_nip(SAMPLE_NIP, date=date)
 
         assert str(exception_info.value) == err_msg
+
+    @responses.activate
+    def test_no_result(self, client):
+        """Test that None is returned as a subject for non-existing nip."""
+        responses.add(
+            responses.GET,
+            f"https://wl-test.mf.gov.pl/api/search/nip/{SAMPLE_NIP}?date={SAMPLE_DATE}",
+            status=200,
+            json={"result": {"subject": None, "requestId": "aa111-aa111aaa"}},
+            content_type="application/json",
+        )
+
+        assert client.search_nip(SAMPLE_NIP, date=datetime.date(2001, 1, 1)) == (
+            None,
+            "aa111-aa111aaa",
+        )

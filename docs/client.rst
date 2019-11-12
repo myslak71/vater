@@ -1,6 +1,6 @@
-===
-API
-===
+======
+Client
+======
 
 .. automodule:: vater.client
     :members:
