@@ -1,7 +1,7 @@
 """This module contains logic for different API request types."""
 import datetime
 from abc import ABC, abstractmethod
-from typing import Any, Dict, List, Tuple, Union
+from typing import Any, Dict, List, Optional, Tuple, Union
 
 import requests
 from requests import Response
@@ -110,7 +110,9 @@ class SearchRequest(RequestType):
         if len(self.params[param]) > self.PARAM_LIMIT:  # type: ignore
             raise MaximumParameterNumberExceeded(param, self.PARAM_LIMIT)
 
-    def result(self) -> Union[dict, Tuple[Union[List[Subject], Subject], str]]:
+    def result(
+        self
+    ) -> Union[dict, Tuple[Union[List[Subject], Optional[Subject]], str]]:
         """Return subject/subjects mapped to the specific parameter and request id."""
         self.validate()
         response = self.send_request()
@@ -119,8 +121,13 @@ class SearchRequest(RequestType):
             return response.json()
 
         result = response.json()["result"]
-        subjects = SubjectSchema().load(
-            result["subjects" if self.many else "subject"], many=self.many
-        )
 
-        return subjects, result["requestId"]
+        if not self.many and result["subject"] is None:
+            return None, result["requestId"]
+
+        return (
+            SubjectSchema().load(
+                result["subjects" if self.many else "subject"], many=self.many
+            ),
+            result["requestId"],
+        )

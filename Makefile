@@ -16,7 +16,10 @@ coverage:  ## create html coverage report and open it in the default browser
 	xdg-open htmlcov/index.html
 
 flake8:  ## run flake8
-	flake8 src
+	flake8 .
+
+integration:  ## run integration tests
+	 pytest tests/integration_tests.py -s -vv
 
 isort:  ## run isort
 	isort . -rc

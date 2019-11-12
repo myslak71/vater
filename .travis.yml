@@ -15,4 +15,5 @@ script:
   - make lint
   - make safety
   - make unittests
+  - make integration
 after_success: coveralls

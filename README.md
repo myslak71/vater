@@ -136,7 +136,7 @@ def search_regons(
 ```
 def search_account(
         self, account: str, *, date: Optional[datetime.date] = None, raw: bool = False
-    ) -> Tuple[Subject, str]:
+    ) -> Tuple[List[Subject], str]:
 ```
 ```
 def search_accounts(
@@ -151,8 +151,8 @@ def search_accounts(
 def check_nip(
         self,
         nip: str,
-        *,
         account: str,
+        *,
         date: Optional[datetime.date] = None,
         raw: bool = False,
     ) -> Tuple[bool, str]:
@@ -161,8 +161,8 @@ def check_nip(
 def check_regon(
         self,
         regon: str,
-        *,
         account: str,
+        *,
         date: Optional[datetime.date] = None,
         raw: bool = False,
     ) -> Tuple[bool, str]:

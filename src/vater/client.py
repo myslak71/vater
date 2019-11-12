@@ -120,7 +120,7 @@ class Client:
     )
     def search_account(
         self, account: str, *, date: Optional[datetime.date] = None, raw: bool = False
-    ) -> Tuple[Subject, str]:
+    ) -> Tuple[List[Subject], str]:
         """
         Get detailed vat payer information for given bank account.
 
@@ -153,33 +153,6 @@ class Client:
         """
 
     @api_request(
-        "/api/check/nip/{nip}/bank-account/{account}?date={date}",
-        CheckRequest,
-        validators={
-            "date": [date_validator],
-            "nip": [nip_validator],
-            "account": [account_validator],
-        },
-    )
-    def check_nip(
-        self,
-        nip: str,
-        *,
-        account: str,
-        date: Optional[datetime.date] = None,
-        raw: bool = False,
-    ) -> Tuple[bool, str]:
-        """
-        Check if given account is assigned to the subject with given nip.
-
-        :param nip: nip number of the subject to check
-        :param account: accountat number of the subject to check
-        :param date: date data is acquired from
-        :param raw: flag indicating if raw json from the server is returned
-                    or python object representation
-        """
-
-    @api_request(
         "/api/check/regon/{regon}/bank-account/{account}?date={date}",
         CheckRequest,
         validators={
@@ -191,8 +164,8 @@ class Client:
     def check_regon(
         self,
         regon: str,
-        *,
         account: str,
+        *,
         date: Optional[datetime.date] = None,
         raw: bool = False,
     ) -> Tuple[bool, str]:
@@ -200,6 +173,33 @@ class Client:
         Check if given account is assigned to the subject with given regon.
 
         :param regon: regon number of the subject to check
+        :param account: account number of the subject to check
+        :param date: date data is acquired from
+        :param raw: flag indicating if raw json from the server is returned
+                    or python object representation
+        """
+
+    @api_request(
+        "/api/check/nip/{nip}/bank-account/{account}?date={date}",
+        CheckRequest,
+        validators={
+            "date": [date_validator],
+            "nip": [nip_validator],
+            "account": [account_validator],
+        },
+    )
+    def check_nip(
+        self,
+        nip: str,
+        account: str,
+        *,
+        date: Optional[datetime.date] = None,
+        raw: bool = False,
+    ) -> Tuple[bool, str]:
+        """
+        Check if given account is assigned to the subject with given nip.
+
+        :param nip: nip number of the subject to check
         :param account: account number of the subject to check
         :param date: date data is acquired from
         :param raw: flag indicating if raw json from the server is returned
