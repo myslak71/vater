@@ -1,7 +1,8 @@
 # Vater
 [![Build Status](https://travis-ci.org/myslak71/vater.svg?branch=master)](https://travis-ci.org/myslak71/vater)
 [![Coverage Status](https://coveralls.io/repos/github/myslak71/vater/badge.svg?branch=master)](https://coveralls.io/github/myslak71/vater?branch=master)
-![image](https://img.shields.io/badge/version-0.1.0-yellow)
+![image](https://img.shields.io/badge/version-0.1.1-yellow)
+[![Documentation Status](https://readthedocs.org/projects/vater/badge/?version=latest)](https://vater.readthedocs.io/en/latest/?badge=latest)
 
 Python client providing convenient way to access polish VAT payers register API (version 1.3.0).
 
@@ -15,8 +16,8 @@ Python client providing convenient way to access polish VAT payers register API 
 
 ```
 >>> import vater
->>> client = vater.Client(base_url="https://wl-api.mf.gov.pl")
->>> client.search_nip(nip="1111111111")
+>>> client = vater.Client(base_url='https://wl-api.mf.gov.pl')
+>>> client.search_nip(nip='1111111111')
 (
   Subject(
     name='Beastie Boys',
@@ -55,10 +56,10 @@ Python client providing convenient way to access polish VAT payers register API 
 If you want to get raw server json just set `raw` to True:
 
 ```
->>> client.search_nip(nip="1111111111", raw=True)
+>>> client.search_nip(nip='1111111111', raw=True)
 {
-  "result": {
-    "subject": {
+  'result': {
+    'subject': {
         'name': 'Eminem',
         'nip': '6969696969', 
         'statusVat': 'Active', 
@@ -88,7 +89,7 @@ If you want to get raw server json just set `raw` to True:
         'accountNumbers': ['11111111111111111111111111'],
         'hasVirtualAccounts': False
   },
-  "requestId": "aa111-aa111aaa",
+  'requestId': 'aa111-aa111aaa',
   }
 }
 ```
@@ -97,75 +98,12 @@ By default the data is fetched from today's date,
 it can be changed by setting `date` argument:
 ```
 >>> import datetime
->>> client.search_nip(nip="1111111111", date=datetime.date(2001, 1, 1))
+>>> client.search_nip(nip='1111111111', date=datetime.date(2001, 1, 1))
 ```
 
 String may also be passed as a `date`:
 ```
->>> client.search_nip(nip="1111111111", date='2001-01-01')
-```
-
-Available methods:
-```
-def search_nip(
-    nip: str, *, date: [datetime.date] = datetime.date.today(), raw: bool = False) -> Tuple[Subject, str]:
-```
-```
-def search_nips(
-        self,
-        nips: Iterable[str],
-        *,
-        date: Optional[datetime.date] = None,
-        raw: bool = False,
-    ) -> Tuple[List[Subject], str]:
-```
-```
-def search_regon(
-        self, regon: str, *, date: Optional[datetime.date] = None, raw: bool = False
-    ) -> Tuple[Subject, str]:
-```
-```
-def search_regons(
-        self,
-        regons: Iterable[str],
-        *,
-        date: Optional[datetime.date] = None,
-        raw: bool = False,
-    ) -> Tuple[List[Subject], str]:
-```
-```
-def search_account(
-        self, account: str, *, date: Optional[datetime.date] = None, raw: bool = False
-    ) -> Tuple[Subject, str]:
-```
-```
-def search_accounts(
-        self,
-        accounts: Iterable[str],
-        *,
-        date: Optional[datetime.date] = None,
-        raw: bool = False,
-    ) -> Tuple[List[Subject], str]:
-```
-```
-def check_nip(
-        self,
-        nip: str,
-        *,
-        account: str,
-        date: Optional[datetime.date] = None,
-        raw: bool = False,
-    ) -> Tuple[bool, str]:
-```
-```
-def check_regon(
-        self,
-        regon: str,
-        *,
-        account: str,
-        date: Optional[datetime.date] = None,
-        raw: bool = False,
-    ) -> Tuple[bool, str]:
+>>> client.search_nip(nip='1111111111', date='2001-01-01')
 ```
 
 Keep in mind the API limits maximum number of requested subjects to 30.

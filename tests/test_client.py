@@ -18,6 +18,7 @@ from vater.request_types import SearchRequest
 SAMPLE_NIP = "0" * 10
 SAMPLE_REGON = "0" * 9
 SAMPLE_ACCOUNT = "0" * 26
+SAMPLE_DATE = "2001-01-01"
 
 
 class TestSubjectSearch:
@@ -124,7 +125,7 @@ class TestSubjectSearch:
         self.set_up()
         responses.add(
             responses.GET,
-            f"https://test-api.no/api/search/nip/{SAMPLE_NIP}?date=2001-01-01",
+            f"https://wl-test.mf.gov.pl/api/search/nip/{SAMPLE_NIP}?date={SAMPLE_DATE}",
             status=200,
             json={
                 "result": {
@@ -146,7 +147,7 @@ class TestSubjectSearch:
         self.set_up()
         responses.add(
             responses.GET,
-            f"https://test-api.no/api/search/nips/{SAMPLE_NIP}?date=2001-01-01",
+            f"https://wl-test.mf.gov.pl/api/search/nips/{SAMPLE_NIP}?date={SAMPLE_DATE}",
             status=200,
             json={
                 "result": {
@@ -167,7 +168,10 @@ class TestSubjectSearch:
         self.set_up()
         responses.add(
             responses.GET,
-            f"https://test-api.no/api/search/regon/{SAMPLE_REGON}?date=2001-01-01",
+            (
+                "https://wl-test.mf.gov.pl/api/search/regon/"
+                f"{SAMPLE_REGON}?date={SAMPLE_DATE}"
+            ),
             status=200,
             json={
                 "result": {
@@ -178,9 +182,10 @@ class TestSubjectSearch:
             content_type="application/json",
         )
 
-        assert client.search_regon(
-            regon=SAMPLE_REGON, date=datetime.date(2001, 1, 1)
-        ) == (self.example_subject, "aa111-aa111aaa")
+        assert client.search_regon(SAMPLE_REGON, date=datetime.date(2001, 1, 1)) == (
+            self.example_subject,
+            "aa111-aa111aaa",
+        )
 
     @responses.activate
     def test_search_regons(self, client):
@@ -188,7 +193,10 @@ class TestSubjectSearch:
         self.set_up()
         responses.add(
             responses.GET,
-            f"https://test-api.no/api/search/regons/{SAMPLE_REGON}?date=2001-01-01",
+            (
+                "https://wl-test.mf.gov.pl/api/search/regons/"
+                f"{SAMPLE_REGON}?date={SAMPLE_DATE}"
+            ),
             status=200,
             json={
                 "result": {
@@ -199,9 +207,10 @@ class TestSubjectSearch:
             content_type="application/json",
         )
 
-        assert client.search_regons(
-            regons=[SAMPLE_REGON], date=datetime.date(2001, 1, 1)
-        ) == ([self.example_subject], "aa111-aa111aaa")
+        assert client.search_regons([SAMPLE_REGON], date=datetime.date(2001, 1, 1)) == (
+            [self.example_subject],
+            "aa111-aa111aaa",
+        )
 
     @responses.activate
     def test_search_account(self, client):
@@ -209,7 +218,10 @@ class TestSubjectSearch:
         self.set_up()
         responses.add(
             responses.GET,
-            f"https://test-api.no/api/search/bank-account/{13 * '69'}?date=2001-01-01",
+            (
+                "https://wl-test.mf.gov.pl/api/search/bank-account/"
+                f"{SAMPLE_ACCOUNT}?date={SAMPLE_DATE}"
+            ),
             status=200,
             json={
                 "result": {
@@ -221,7 +233,7 @@ class TestSubjectSearch:
         )
 
         assert client.search_account(
-            account=f"{13 * '69'}", date=datetime.date(2001, 1, 1)
+            SAMPLE_ACCOUNT, date=datetime.date(2001, 1, 1)
         ) == ([self.example_subject], "aa111-aa111aaa")
 
     @responses.activate
@@ -230,7 +242,10 @@ class TestSubjectSearch:
         self.set_up()
         responses.add(
             responses.GET,
-            f"https://test-api.no/api/search/bank-accounts/{SAMPLE_ACCOUNT}?date=2001-01-01",
+            (
+                "https://wl-test.mf.gov.pl/api/search/bank-accounts/"
+                f"{SAMPLE_ACCOUNT}?date={SAMPLE_DATE}"
+            ),
             status=200,
             json={
                 "result": {
@@ -252,8 +267,8 @@ class TestSubjectSearch:
         responses.add(
             responses.GET,
             (
-                f"https://test-api.no/api/check/nip/{SAMPLE_NIP}/bank-account/"
-                f"{SAMPLE_ACCOUNT}?date=2001-01-01"
+                f"https://wl-test.mf.gov.pl/api/check/nip/{SAMPLE_NIP}/bank-account/"
+                f"{SAMPLE_ACCOUNT}?date={SAMPLE_DATE}"
             ),
             status=200,
             json={"result": {"accountAssigned": "TAK", "requestId": "aa111-aa111aaa"}},
@@ -261,7 +276,7 @@ class TestSubjectSearch:
         )
 
         assert client.check_nip(
-            nip=SAMPLE_NIP, account=SAMPLE_ACCOUNT, date=datetime.date(2001, 1, 1)
+            SAMPLE_NIP, SAMPLE_ACCOUNT, date=datetime.date(2001, 1, 1)
         ) == (True, "aa111-aa111aaa")
 
     @responses.activate
@@ -271,8 +286,8 @@ class TestSubjectSearch:
         responses.add(
             responses.GET,
             (
-                "https://test-api.no/api/check/regon/696969696/bank-account/"
-                f"{13 * '69'}?date=2001-01-01"
+                f"https://wl-test.mf.gov.pl/api/check/regon/{SAMPLE_REGON}/bank-account/"
+                f"{SAMPLE_ACCOUNT}?date={SAMPLE_DATE}"
             ),
             status=200,
             json={"result": {"accountAssigned": "TAK", "requestId": "aa111-aa111aaa"}},
@@ -280,7 +295,7 @@ class TestSubjectSearch:
         )
 
         assert client.check_regon(
-            regon="696969696", account=f"{13 * '69'}", date=datetime.date(2001, 1, 1)
+            SAMPLE_REGON, SAMPLE_ACCOUNT, date=datetime.date(2001, 1, 1)
         ) == (True, "aa111-aa111aaa")
 
     @responses.activate
@@ -289,7 +304,7 @@ class TestSubjectSearch:
         self.set_up()
         responses.add(
             responses.GET,
-            f"https://test-api.no/api/search/nip/{SAMPLE_NIP}?date=2001-01-01",
+            f"https://wl-test.mf.gov.pl/api/search/nip/{SAMPLE_NIP}?date={SAMPLE_DATE}",
             status=200,
             json={
                 "result": {
@@ -312,7 +327,7 @@ class TestSubjectSearch:
         self.set_up()
         responses.add(
             responses.GET,
-            f"https://test-api.no/api/search/nip/{SAMPLE_NIP}?date=2001-01-01",
+            f"https://wl-test.mf.gov.pl/api/search/nip/{SAMPLE_NIP}?date={SAMPLE_DATE}",
             status=200,
             json={
                 "result": {
@@ -339,8 +354,8 @@ class TestSubjectSearch:
         responses.add(
             responses.GET,
             (
-                f"https://test-api.no/api/check/nip/{SAMPLE_NIP}/bank-account/"
-                f"{13 * '69'}?date=2001-01-01"
+                f"https://wl-test.mf.gov.pl/api/check/nip/{SAMPLE_NIP}/bank-account/"
+                f"{SAMPLE_ACCOUNT}?date={SAMPLE_DATE}"
             ),
             status=200,
             json={"result": {"accountAssigned": "TAK", "requestId": "aa111-aa111aaa"}},
@@ -348,10 +363,7 @@ class TestSubjectSearch:
         )
 
         assert client.check_nip(
-            nip=SAMPLE_NIP,
-            account=f"{13 * '69'}",
-            date=datetime.date(2001, 1, 1),
-            raw=True,
+            SAMPLE_NIP, SAMPLE_ACCOUNT, date=datetime.date(2001, 1, 1), raw=True
         ) == {"result": {"accountAssigned": "TAK", "requestId": "aa111-aa111aaa"}}
 
     @pytest.mark.parametrize(
@@ -363,14 +375,14 @@ class TestSubjectSearch:
         self.set_up()
         responses.add(
             responses.GET,
-            f"https://test-api.no/api/search/nip/{SAMPLE_NIP}?date=2001-01-01",
+            f"https://wl-test.mf.gov.pl/api/search/nip/{SAMPLE_NIP}?date={SAMPLE_DATE}",
             status=400,
             json={"code": error_code, "message": "Message from the server"},
             content_type="application/json",
         )
 
         with pytest.raises(InvalidRequestData, match=ERROR_CODE_MAPPING[error_code]):
-            client.search_nip(nip=SAMPLE_NIP, date=datetime.date(2001, 1, 1), raw=True)
+            client.search_nip(SAMPLE_NIP, date=datetime.date(2001, 1, 1), raw=True)
 
     @responses.activate
     def test_api_returns_500(self, client):
@@ -378,19 +390,19 @@ class TestSubjectSearch:
         self.set_up()
         responses.add(
             responses.GET,
-            f"https://test-api.no/api/search/nip/{SAMPLE_NIP}?date=2001-01-01",
+            f"https://wl-test.mf.gov.pl/api/search/nip/{SAMPLE_NIP}?date={SAMPLE_DATE}",
             status=500,
-            json={"message": "Uknown error"},
+            json={"message": "Unknown error"},
             content_type="application/json",
         )
 
         with pytest.raises(UnknownExternalApiError) as exception_info:
-            client.search_nip(nip=SAMPLE_NIP, date=datetime.date(2001, 1, 1), raw=True)
+            client.search_nip(SAMPLE_NIP, date=datetime.date(2001, 1, 1), raw=True)
 
         assert (
-            'UnknownExternalApiError: status code: 500, data: {"message": "Uknown error"}'
-            in str(exception_info.value)
-        )
+            "UnknownExternalApiError: status code: 500, data: "
+            '{"message": "Unknown error"}'
+        ) in str(exception_info.value)
 
     def test_max_args_exceeded(self, client):
         """Test that error is raised when number of args exceeds allowed maximum."""
@@ -450,7 +462,10 @@ class TestSubjectSearch:
             ("", "ValidationError: regon `` invalid length: 0, required 9 or 14"),
             (
                 "12345678901",
-                "ValidationError: regon `12345678901` invalid length: 11, required 9 or 14",
+                (
+                    "ValidationError: regon `12345678901` invalid length: 11, "
+                    "required 9 or 14"
+                ),
             ),
             ("123456789", "ValidationError: regon `123456789` - invalid checksum"),
         ),
@@ -472,7 +487,10 @@ class TestSubjectSearch:
             ([""], "ValidationError: regon `` invalid length: 0, required 9 or 14"),
             (
                 ["12345678901"],
-                "ValidationError: regon `12345678901` invalid length: 11, required 9 or 14",
+                (
+                    "ValidationError: regon `12345678901` invalid length: 11, "
+                    "required 9 or 14"
+                ),
             ),
             (["123456789"], "ValidationError: regon `123456789` - invalid checksum"),
         ),
@@ -494,7 +512,7 @@ class TestSubjectSearch:
             ("", "ValidationError: account `` invalid length: 0, required 26"),
             (
                 "0" * 27,
-                f"ValidationError: account `{'0'*27}` invalid length: 27, required 26",
+                f"ValidationError: account `{'0' * 27}` invalid length: 27, required 26",
             ),
         ),
     )
@@ -515,7 +533,7 @@ class TestSubjectSearch:
             ([""], "ValidationError: account `` invalid length: 0, required 26"),
             (
                 ["0" * 27],
-                f"ValidationError: account `{'0'*27}` invalid length: 27, required 26",
+                f"ValidationError: account `{'0' * 27}` invalid length: 27, required 26",
             ),
         ),
     )
@@ -531,17 +549,39 @@ class TestSubjectSearch:
         (
             (
                 "01-01-2019",
-                "ValidationError: date `01-01-2019` is not a valid date, `YYYY-MM-DD` allowed",
+                (
+                    "ValidationError: date `01-01-2019` is not a valid date, "
+                    "`YYYY-MM-DD` allowed"
+                ),
             ),
             (
                 "not a date",
-                "ValidationError: date `not a date` is not a valid date, `YYYY-MM-DD` allowed",
+                (
+                    "ValidationError: date `not a date` is not a valid date, "
+                    "`YYYY-MM-DD` allowed"
+                ),
             ),
         ),
     )
     def test_invalid_date(self, date, err_msg, client):
         """Test that error is raised when given date is invalid."""
         with pytest.raises(ValidationError) as exception_info:
-            client.search_nip("0" * 10, date=date)
+            client.search_nip(SAMPLE_NIP, date=date)
 
         assert str(exception_info.value) == err_msg
+
+    @responses.activate
+    def test_no_result(self, client):
+        """Test that None is returned as a subject for non-existing nip."""
+        responses.add(
+            responses.GET,
+            f"https://wl-test.mf.gov.pl/api/search/nip/{SAMPLE_NIP}?date={SAMPLE_DATE}",
+            status=200,
+            json={"result": {"subject": None, "requestId": "aa111-aa111aaa"}},
+            content_type="application/json",
+        )
+
+        assert client.search_nip(SAMPLE_NIP, date=datetime.date(2001, 1, 1)) == (
+            None,
+            "aa111-aa111aaa",
+        )
