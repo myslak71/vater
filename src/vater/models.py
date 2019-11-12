@@ -1,19 +1,19 @@
 """Schemas and models module."""
 import datetime
 from dataclasses import dataclass
-from typing import Dict, List, Optional
+from typing import Any, Dict, List, Optional
 
 from marshmallow import Schema, fields, post_load
 
 
-@dataclass(eq=True)
+@dataclass
 class Company:
-    """Class representing companies in vat payers register."""
+    """Class representing company in vat payers register."""
 
-    company_name: str
-    first_name: str
-    last_name: str
-    nip: str
+    company_name: Optional[str]
+    first_name: Optional[str]
+    last_name: Optional[str]
+    nip: Optional[str]
     pesel: Optional[str]
 
 
@@ -27,8 +27,8 @@ class CompanySchema(Schema):
     pesel = fields.String(allow_none=True, required=True)
 
     @post_load
-    def make_company(self, data: Dict[str, str], **kwargs) -> Company:
-        """Create company instance."""
+    def make_company(self, data: Dict[str, str], **kwargs: Any) -> Company:
+        """Create a company instance."""
         return Company(**data)
 
 
@@ -95,6 +95,6 @@ class SubjectSchema(Schema):
     )
 
     @post_load
-    def make_subject(self, data: dict, **kwargs) -> Subject:
-        """Create subject instance."""
+    def make_subject(self, data: dict, **kwargs: Any) -> Subject:
+        """Create a subject instance."""
         return Subject(**data)

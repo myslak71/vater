@@ -11,7 +11,7 @@ with open(os.path.join(DIR_PATH, "README.md"), encoding="utf-8") as file:
 
 about = {}
 with open(
-    os.path.join(DIR_PATH, "src", "vater", "__init__.py"), "r", encoding="utf-8"
+    os.path.join(DIR_PATH, "src", "vater", "__about__.py"), "r", encoding="utf-8"
 ) as file:
     exec(file.read(), about)
 
@@ -44,6 +44,8 @@ setup(
         "Natural Language :: English",
         "License :: OSI Approved :: MIT License",
         "Programming Language :: Python",
+        "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.7",
     ],
+    entry_points={"console_scripts": "vater=vater.cli:cli"},
 )

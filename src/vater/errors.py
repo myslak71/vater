@@ -2,6 +2,7 @@
 
 from typing import Optional
 
+# Following code mapping comes from API docs
 ERROR_CODE_MAPPING = {
     "WL-100": "Unexpected server error.",
     "WL-101": "Date cannot be empty.",
@@ -27,16 +28,16 @@ ERROR_CODE_MAPPING = {
 }
 
 
-class InvalidRequestData(Exception):
+class ApiError(Exception):
+    """Base class for all API errors."""
+
+
+class InvalidRequestData(ApiError):
     """Base class for invalid request errors."""
 
 
 class InvalidField(InvalidRequestData):
     """Raised if known error from external API is returned."""
-
-
-class InvalidNipsNumber(InvalidRequestData):
-    """Raised when number of nips is invalid."""
 
 
 class UnknownExternalApiError(Exception):
@@ -47,9 +48,42 @@ class UnknownExternalApiError(Exception):
         self.status_code = status_code
         self.data = data
 
-    def __repr__(self) -> str:
+    def __str__(self) -> str:
         """Get error representation."""
         return (
             f"{self.__class__.__name__}: status code: {self.status_code}, "
             f"data: {self.data}"
         )
+
+
+class ClientError(Exception):
+    """Base class for all vater client errors."""
+
+
+class MaximumParameterNumberExceeded(ClientError):
+    """Raised when arguments number exceeds allowed maximum."""
+
+    def __init__(self, param: str, maximum: int) -> None:
+        """Assign parameter name."""
+        self.param = param
+        self.maximum = maximum
+
+    def __str__(self) -> str:
+        """Get error representation."""
+        return (
+            f"{self.__class__.__name__}: number of {self.param} "
+            f"exceeds allowed maximum: {self.maximum}"
+        )
+
+
+class ValidationError(ClientError):
+    """Raised during parameter validation."""
+
+    def __init__(self, param, msg) -> None:
+        """Initialize the instance."""
+        self.param = param
+        self.msg = msg
+
+    def __str__(self) -> str:
+        """Get validation error representation."""
+        return f"{self.__class__.__name__}: {self.param} {self.msg}"

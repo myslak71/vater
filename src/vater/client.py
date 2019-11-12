@@ -1,179 +1,207 @@
 """Vat register client module."""
 import datetime
-import functools
-import inspect
-from enum import Enum
-from typing import Callable, Iterable, List, Optional, Tuple, Union
+from typing import Iterable, List, Optional, Tuple
 
-import requests
-
-from vater.errors import ERROR_CODE_MAPPING, InvalidRequestData, UnknownExternalApiError
-from vater.models import Subject, SubjectSchema
-
-
-class RequestType(Enum):
-    """Represents request type - there is a different API response for each."""
-
-    CHECK = "check"
-    SEARCH = "search"
-
-
-def handle_response(  # type: ignore
-    response, request_type: RequestType, many: bool = False
-) -> Union[Tuple[bool, str], Tuple[Union[Subject, List[Subject]], str]]:
-    """Handle response from API."""
-    if response.status_code == 400:
-        raise InvalidRequestData(ERROR_CODE_MAPPING[response.json()["code"]])
-    elif response.status_code != 200:
-        raise UnknownExternalApiError(response.status_code, response.text)
-
-    result = response.json()["result"]
-
-    if request_type == RequestType.CHECK:
-        return result["accountAssigned"] == "TAK", result["requestId"]
-    else:
-        subjects = SubjectSchema().load(
-            result["subjects" if many else "subject"], many=many
-        )
-        return subjects, result["requestId"]
-
-
-def api_request(url: str, request_type: RequestType, many: bool = False) -> Callable:
-    """Decorate for api requests."""
-
-    def outer_wrapper(func: Callable) -> Callable:
-        """Allow passing arguments."""
-
-        @functools.wraps(func)
-        def inner_wrapper(
-            self, parameter: str, date: datetime.date, account: str = None
-        ) -> Union[Tuple[bool, str], Tuple[Union[Subject, List[Subject]], str]]:
-            """Fetch subject/subjects and request identifier from API."""
-            nonlocal url
-
-            url = prepare_url(account, date, parameter)
-
-            response = requests.get(
-                f"{self.base_url}{url}",
-                # without User-Agent header production API returns 403
-                headers={"User-Agent": ""},
-            )
-
-            return handle_response(response, request_type, many)
-
-        def prepare_url(
-            account: Optional[str], date: datetime.date, parameter: str
-        ) -> str:
-            """Evaluate path parameters."""
-            nonlocal url
-            if request_type == RequestType.CHECK:
-                url = url.replace(
-                    f"{{{inspect.getfullargspec(func).args[3]}}}",
-                    account,  # type: ignore
-                )
-            else:
-                if many and not isinstance(parameter, str):
-                    parameter = ",".join(parameter)
-
-            url = url.replace(f"{{{inspect.getfullargspec(func).args[1]}}}", parameter)
-            return url.replace("{date}", str(date))
-
-        return inner_wrapper
-
-    return outer_wrapper
+from vater.api_request import api_request
+from vater.models import Subject
+from vater.request_types import CheckRequest, SearchRequest
+from vater.validators import (
+    account_validator,
+    accounts_validator,
+    date_validator,
+    nip_validator,
+    nips_validator,
+    regon_validator,
+    regons_validator,
+)
 
 
 class Client:
-    """Vat register client class."""
+    """
+    Vat register client class.
+
+    Currently the API limits maximum number of requested subjects
+    to 30, therefore if that number is exceeded MaximumParameterNumberExceeded
+    is raised.
+    """
 
     def __init__(self, base_url: str) -> None:
-        """Set API url."""
+        """
+        Set root API url.
+
+        :param base_url: root url of the API
+        """
         self.base_url = base_url
 
-    @api_request("/api/search/nip/{nip}?date={date}", request_type=RequestType.SEARCH)
-    def search_nip(self, nip: str, date: datetime.date) -> Tuple[Subject, str]:
-        """Get detailed vat payer information for given nip."""
+    @api_request(
+        "/api/search/nip/{nip}?date={date}",
+        SearchRequest,
+        validators={"date": [date_validator], "nip": [nip_validator]},
+    )
+    def search_nip(
+        self, nip: str, *, date: Optional[datetime.date] = None, raw: bool = False
+    ) -> Tuple[Subject, str]:
+        """
+        Get detailed vat payer information for given nip.
+
+        :param nip: nip number of the subject to fetch
+        :param date: date data is acquired from
+        :param raw: flag indicating if raw json from the server is returned
+                    or python object representation
+        :return: subject and request id
+        """
 
     @api_request(
         "/api/search/nips/{nips}?date={date}",
-        request_type=RequestType.SEARCH,
+        SearchRequest,
         many=True,
+        validators={"date": [date_validator], "nips": [nips_validator]},
     )
     def search_nips(
-        self, nips: Iterable[str], date: datetime.date
+        self,
+        nips: Iterable[str],
+        *,
+        date: Optional[datetime.date] = None,
+        raw: bool = False,
     ) -> Tuple[List[Subject], str]:
-        """Get a list of detailed vat payers information."""
+        """
+        Get a list of detailed vat payers information.
+
+        :param nips: nip numbers of the subjects to fetch
+        :param date: date data is acquired from
+        :param raw: flag indicating if raw json from the server is returned
+                    or python object representation
+        """
 
     @api_request(
-        "/api/search/regon/{regon}?date={date}", request_type=RequestType.SEARCH
+        "/api/search/regon/{regon}?date={date}",
+        SearchRequest,
+        validators={"date": [date_validator], "regon": [regon_validator]},
     )
-    def search_regon(self, regon: str, date: datetime.date) -> Tuple[Subject, str]:
-        """Get detailed vat payer information for given regon."""
+    def search_regon(
+        self, regon: str, *, date: Optional[datetime.date] = None, raw: bool = False
+    ) -> Tuple[Subject, str]:
+        """
+        Get detailed vat payer information for given regon.
+
+        :param regon: regon number of the subject to fetch
+        :param date: date data is acquired from
+        :param raw: flag indicating if raw json from the server is returned
+                    or python object representation
+        """
 
     @api_request(
         "/api/search/regons/{regons}?date={date}",
-        request_type=RequestType.SEARCH,
+        SearchRequest,
         many=True,
+        validators={"date": [date_validator], "regons": [regons_validator]},
     )
     def search_regons(
-        self, regons: Iterable[str], date: datetime.date
+        self,
+        regons: Iterable[str],
+        *,
+        date: Optional[datetime.date] = None,
+        raw: bool = False,
     ) -> Tuple[List[Subject], str]:
-        """Get a list of detailed vat payers information."""
+        """
+        Get a list of detailed vat payers information.
+
+        :param regons: regon numbers of the subjects to fetch
+        :param date: date data is acquired from
+        :param raw: flag indicating if raw json from the server is returned
+                    or python object representation
+        """
 
     @api_request(
         "/api/search/bank-account/{account}?date={date}",
-        request_type=RequestType.SEARCH,
-        many=True,
+        SearchRequest,
+        many=True,  # API returns `subjects` key for single account search
+        validators={"date": [date_validator], "account": [account_validator]},
     )
-    def search_account(self, account: str, date: datetime.date) -> Tuple[Subject, str]:
-        """Get detailed vat payer information for given bank account."""
+    def search_account(
+        self, account: str, *, date: Optional[datetime.date] = None, raw: bool = False
+    ) -> Tuple[Subject, str]:
+        """
+        Get detailed vat payer information for given bank account.
+
+        :param account: account number of the subject to fetch
+        :param date: date data is acquired from
+        :param raw: flag indicating if raw json from the server is returned
+                    or python object representation
+        """
 
     @api_request(
         "/api/search/bank-accounts/{accounts}?date={date}",
-        request_type=RequestType.SEARCH,
+        SearchRequest,
         many=True,
+        validators={"date": [date_validator], "accounts": [accounts_validator]},
     )
     def search_accounts(
-        self, accounts: Iterable[str], date: datetime.date
+        self,
+        accounts: Iterable[str],
+        *,
+        date: Optional[datetime.date] = None,
+        raw: bool = False,
     ) -> Tuple[List[Subject], str]:
-        """Get a list of detailed vat payers information."""
+        """
+        Get a list of detailed vat payers information.
+
+        :param accounts: account numbers of the subjects to fetch
+        :param date: date data is acquired from
+        :param raw: flag indicating if raw json from the server is returned
+                    or python object representation
+        """
 
     @api_request(
         "/api/check/nip/{nip}/bank-account/{account}?date={date}",
-        request_type=RequestType.CHECK,
+        CheckRequest,
+        validators={
+            "date": [date_validator],
+            "nip": [nip_validator],
+            "account": [account_validator],
+        },
     )
     def check_nip(
-        self, nip: str, date: datetime.date, account: str
+        self,
+        nip: str,
+        *,
+        account: str,
+        date: Optional[datetime.date] = None,
+        raw: bool = False,
     ) -> Tuple[bool, str]:
-        """Check if given account is assigned to subject with given nip."""
+        """
+        Check if given account is assigned to the subject with given nip.
+
+        :param nip: nip number of the subject to check
+        :param account: accountat number of the subject to check
+        :param date: date data is acquired from
+        :param raw: flag indicating if raw json from the server is returned
+                    or python object representation
+        """
 
     @api_request(
         "/api/check/regon/{regon}/bank-account/{account}?date={date}",
-        request_type=RequestType.CHECK,
+        CheckRequest,
+        validators={
+            "date": [date_validator],
+            "account": [account_validator],
+            "regon": [regon_validator],
+        },
     )
     def check_regon(
-        self, regon: str, date: datetime.date, account: str
+        self,
+        regon: str,
+        *,
+        account: str,
+        date: Optional[datetime.date] = None,
+        raw: bool = False,
     ) -> Tuple[bool, str]:
-        """Check if given account is assigned to subject with given regon."""
+        """
+        Check if given account is assigned to the subject with given regon.
 
-
-# if __name__ == "__main__":
-#     client = Client(base_url="https://wl-api.mf.gov.pl")
-#
-#     subject = client.search_nip("9542682325", "2019-09-30")
-#     print(subject)
-#     subjects = client.search_nips(["9542682325"], "2019-09-30")
-#     print(subjects)
-#     subject = client.search_regon("241234369", "2019-09-30")
-#     print(subject)
-#     subjects = client.search_regons(["241234369"], "2019-09-30")
-#     print(subjects)
-#     subject = client.search_account("23249000050000460042096848", "2019-09-30")
-#     print(subject)
-#     subject = client.search_accounts(["23249000050000460042096848"], "2019-09-30")
-#     print(subject)
-#
-#     res = client.check_nip("9542682325", "2019-09-30", "23249000050000460042096848")
-#     print(res)
-#     res = client.check_regon("241234369", "2019-09-30", "23249000050000460042096848")
-#     print(res)
+        :param regon: regon number of the subject to check
+        :param account: account number of the subject to check
+        :param date: date data is acquired from
+        :param raw: flag indicating if raw json from the server is returned
+                    or python object representation
+        """
