@@ -1,7 +1,7 @@
 # Vater
 [![Build Status](https://travis-ci.org/myslak71/vater.svg?branch=master)](https://travis-ci.org/myslak71/vater)
 [![Coverage Status](https://coveralls.io/repos/github/myslak71/vater/badge.svg?branch=master)](https://coveralls.io/github/myslak71/vater?branch=master)
-![image](https://img.shields.io/badge/version-0.1.0-yellow)
+![image](https://img.shields.io/badge/version-0.1.1-yellow)
 [![Documentation Status](https://readthedocs.org/projects/vater/badge/?version=latest)](https://vater.readthedocs.io/en/latest/?badge=latest)
 
 Python client providing convenient way to access polish VAT payers register API (version 1.3.0).
