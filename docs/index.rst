@@ -9,10 +9,3 @@ Welcome to vater's documentation!
    usage
    client
    models
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
