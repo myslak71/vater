@@ -5,7 +5,8 @@ vater's docs
    :maxdepth: 2
    :caption: Contents:
 
-   install
+   introduction
+   installation
    usage
-   api
+   client
    models
