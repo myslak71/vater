@@ -5,7 +5,7 @@ Usage
 Scripts
 '''''''
 
-.. code-block::
+.. code-block:: Python
 
    >>> import vater
    >>> client = vater.Client(base_url='https://wl-api.mf.gov.pl')
@@ -46,7 +46,7 @@ Scripts
 
 If you want to get raw server json just set ``raw`` to True:
 
-.. code-block::
+.. code-block:: Python
 
    >>> client.search_nip(nip='1111111111', raw=True)
    {
@@ -88,14 +88,14 @@ If you want to get raw server json just set ``raw`` to True:
 By default the data is fetched from today's date,
 it can be changed by setting ``date`` argument:
 
-.. code-block::
+.. code-block:: Python
 
    >>> import datetime
    >>> client.search_nip(nip='1111111111', date=datetime.date(2001, 1, 1))
 
 String may also be passed as a ``date``\ :
 
-.. code-block::
+.. code-block:: Python
 
    >>> client.search_nip(nip='1111111111', date='2001-01-01')
 
