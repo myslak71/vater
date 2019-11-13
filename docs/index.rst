@@ -1,4 +1,4 @@
-vater's documentation!
+vater's docs
 =================================
 
 .. toctree::
@@ -10,3 +10,12 @@ vater's documentation!
    usage
    client
    models
+
+Indices and tables
+==================
+
+* :ref:`genindex`
+* :ref:`modindex`
+* :ref:`search`
+
+
