@@ -34,15 +34,7 @@ jobs:
       os: osx
       osx_image: xcode11.2
       language: shell
-    - name: "Python 3.7 Windows"
-      os: windows
-      language: shell
-      before_install:
-        - choco install python --version 3.7
-        - python -m pip install --upgrade pip
-      env: PATH=/c/Python37:/c/Python37/Scripts:$PATH
 install:
-  - pip3 install --upgrade pip
   - pip install .[dev]
 script:
   - make lint
