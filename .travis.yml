@@ -35,6 +35,7 @@ jobs:
       osx_image: xcode11.2
       language: shell
 install:
+  - pip3 install --upgrade pip
   - pip install .[dev]
 script:
   - make lint
