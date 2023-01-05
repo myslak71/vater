@@ -11,14 +11,10 @@ black:  ## run black
 black_check:  ## run isort check
 	 black . --check
 
-coverage:  ## create html coverage report and open it in the default browser
-	coverage html
-	xdg-open htmlcov/index.html
-
 flake8:  ## run flake8
-	flake8 .
+	 flake8 .
 
-integration:  ## run integration tests
+integration-tests:  ## run integration tests
 	 pytest tests/integration_tests.py -s -vv
 
 isort:  ## run isort
@@ -30,13 +26,13 @@ isort_check:  ## run isort check
 lint: mypy flake8 yamllint  isort_check black_check ## run all linters
 
 mypy:  ## run mypy
-	mypy src --strict-optional
+	mypy vater
 
 safety:  ## run safety check
 	safety check -r requirements.txt -r requirements-dev.txt
 
-unittests:  ## run pytest with coverage and -s flag for debugging
-	 pytest --cov=vater tests/ -s -vv
+unit-tests:  ## run pytest with coverage and -s flag for debugging
+	pytest --cov=vater tests/ -s -vv
 
 yamllint:  ## run yamllint
 	yamllint .

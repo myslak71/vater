@@ -1,7 +1,5 @@
 """Errors module."""
 
-from typing import Optional
-
 # Following code mapping comes from API docs
 ERROR_CODE_MAPPING = {
     "WL-100": "Unexpected server error.",
@@ -20,9 +18,12 @@ ERROR_CODE_MAPPING = {
     "WL-113": "NIP has invalid length. 10 digits required.",
     "WL-114": "NIP is invalid type. Only digits are allowed.",
     "WL-115": "NIP is invalid.",
+    "WL-116": "Field `nazwa podmiotu` cannot be empty.",
+    "WL-117": "Field `nazwa podmiotu` is too short - at least 5 characters are required",
     "WL-118": "Date has value preceding registry range.",
     "WL-130": "Max request arguments exceeded",
     "WL-190": "Invalid Request.",
+    "WL-191": "Daily requests limit for this IP has been reached..",
     "WL-195": "Database has been updated. Send a request again.",
     "WL-196": "Database is being updated, Try again later.",
 }
@@ -43,47 +44,22 @@ class InvalidField(InvalidRequestData):
 class UnknownExternalApiError(Exception):
     """Raised when unknown error from vat register site occurs."""
 
-    def __init__(self, status_code: int, data: Optional[str]) -> None:
-        """Assign status code and data to the instance."""
-        self.status_code = status_code
-        self.data = data
-
-    def __str__(self) -> str:
-        """Get error representation."""
-        return (
-            f"{self.__class__.__name__}: status code: {self.status_code}, "
-            f"data: {self.data}"
-        )
-
 
 class ClientError(Exception):
     """Base class for all vater client errors."""
 
 
-class MaximumParameterNumberExceeded(ClientError):
-    """Raised when arguments number exceeds allowed maximum."""
-
-    def __init__(self, param: str, maximum: int) -> None:
-        """Assign parameter name."""
-        self.param = param
-        self.maximum = maximum
-
-    def __str__(self) -> str:
-        """Get error representation."""
-        return (
-            f"{self.__class__.__name__}: number of {self.param} "
-            f"exceeds allowed maximum: {self.maximum}"
-        )
+class InvalidDateError(ClientError):
+    """Raised when date validation fails."""
 
 
-class ValidationError(ClientError):
-    """Raised during parameter validation."""
+class InvalidNipError(ClientError):
+    """Raised when NIP validation fails."""
 
-    def __init__(self, param, msg) -> None:
-        """Initialize the instance."""
-        self.param = param
-        self.msg = msg
 
-    def __str__(self) -> str:
-        """Get validation error representation."""
-        return f"{self.__class__.__name__}: {self.param} {self.msg}"
+class InvalidRegonError(ClientError):
+    """Raised when REGON validation fails."""
+
+
+class InvalidAccountError(ClientError):
+    """Raised when bank account validation fails."""

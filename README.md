@@ -53,48 +53,7 @@ Python client providing convenient way to access polish VAT payers register API 
 )
 ```
 
-If you want to get raw server json just set `raw` to True:
-
-```
->>> client.search_nip(nip='0000000000', raw=True)
-{
-  'result': {
-    'subject': {
-        'name': 'Eminem',
-        'nip': '0000000000', 
-        'statusVat': 'Active', 
-        'regon': '777777777', 
-        'pesel': '77777777777', 
-        'krs': '6969696969', 
-        'residenceAddress': '8 mile', 
-        'workingAddress': '8 mile', 
-        'representatives': [
-            {
-              'companyName': 'Moby Dick Inc',
-              'firstName': 'sir Richard',
-              'lastName': 'Lion Heart',
-              'nip': '0000000000',
-              'pesel': '77777777777'
-            }
-        ],
-        'authorizedClerks': [],
-        'partners': [],
-        'registrationLegalDate': '2001-01-01',
-        'registrationDenialBasis': 'Denial Basis',
-        'registrationDenialDate': '2002-02-02',
-        'restorationBasis': 'Restoration Basis',
-        'restorationDate': '2003-03-03',
-        'removalBasis': 'Removal Basis',
-        'removalDate': '2004-04-04',
-        'accountNumbers': ['00000000000000000000000000'],
-        'hasVirtualAccounts': False
-  },
-  'requestId': 'aa111-aa111aaa',
-  }
-}
-```
-
-By default the data is fetched from today's date,
+By default, the data is fetched from today's date,
 it can be changed by setting `date` argument:
 ```
 >>> import datetime
@@ -107,22 +66,6 @@ String may also be passed as a `date`:
 ```
 
 Keep in mind the API limits maximum number of requested subjects to 30.
-
-##### CLI
-
-| command | 
-| --- |
-| `vater search-nip [ACCOUNT]` |
-| `vater search-nip [ACCOUNTS]` |
-| `vater search-nip [NIP]` |
-| `vater search-nips [NIPS]` |
-| `vater search-nips [REGON]` |
-| `vater search-nips [REGONS]` |
-| `vater check-nip [NIP] [ACCOUNT]` |
-| `vater check-regon [REGON] [ACCOUNT]` |
-
-Each command allows to set `--date` parameter formatted as follows `YYYY-MM-DD`.
-Default value is today's date.
 
 #### Docs
 Project docs may be found here:

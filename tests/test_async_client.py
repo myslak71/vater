@@ -1,12 +1,14 @@
-"""Test client module."""
+"""Test async client module."""
 import datetime
 import json
 from http import HTTPStatus
 
 import pytest
+import pytest_asyncio
 from freezegun import freeze_time
 
 from tests.conftest import SAMPLE_ACCOUNT, SAMPLE_DATE, SAMPLE_NIP, SAMPLE_REGON
+from vater import AsyncClient
 from vater.errors import (
     ERROR_CODE_MAPPING,
     InvalidAccountError,
@@ -16,69 +18,17 @@ from vater.errors import (
     InvalidRequestData,
     UnknownExternalApiError,
 )
-from vater.models import (
-    EntityCheck,
-    EntityItem,
-    EntityList,
-    EntityPerson,
-    Entry,
-    EntryList,
-    Subject,
-)
+from vater.models import EntityCheck, EntityItem, EntityList, Entry, EntryList
 
 
-@pytest.fixture
-def subject() -> Subject:
-    """Return sample Subject."""
-    return Subject(
-        name="Eminem",
-        nip=SAMPLE_NIP,
-        status_vat="Active",
-        regon=SAMPLE_REGON,
-        pesel="77777777777",
-        krs="6969696969",
-        residence_address="8 mile",
-        working_address="8 mile",
-        representatives=[
-            EntityPerson(
-                company_name="Moby Dick Inc",
-                first_name="sir Richard",
-                last_name="Lion Heart",
-                nip=SAMPLE_NIP,
-                pesel="77777777777",
-            )
-        ],
-        authorized_clerks=[
-            EntityPerson(
-                company_name="Moby Dick Inc",
-                first_name="sir Richard",
-                last_name="Lion Heart",
-                nip=SAMPLE_NIP,
-                pesel="77777777777",
-            )
-        ],
-        partners=[
-            EntityPerson(
-                company_name="Moby Dick Inc",
-                first_name="sir Richard",
-                last_name="Lion Heart",
-                nip=SAMPLE_NIP,
-                pesel="77777777777",
-            )
-        ],
-        registration_legal_date=datetime.date(2001, 1, 1),
-        registration_denial_basis="Denial Basis",
-        registration_denial_date=datetime.date(2002, 2, 2),
-        restoration_basis="Restoration Basis",
-        restoration_date=datetime.date(2003, 3, 3),
-        removal_basis="Removal Basis",
-        removal_date=datetime.date(2004, 4, 4),
-        account_numbers=[SAMPLE_ACCOUNT],
-        has_virtual_accounts=False,
-    )
+@pytest_asyncio.fixture
+def async_client() -> AsyncClient:
+    """Yield vat register API client. Client connects to test API client."""
+    return AsyncClient(base_url="https://wl-test.mf.gov.pl")
 
 
-def test_no_result(client, httpx_mock):
+@pytest.mark.asyncio
+async def test_no_result(async_client, httpx_mock):
     """Test that None is returned as a subject for non-existing nip."""
     httpx_mock.add_response(
         url=f"https://wl-test.mf.gov.pl/api/search/nip/{SAMPLE_NIP}?date={SAMPLE_DATE}",
@@ -94,8 +44,8 @@ def test_no_result(client, httpx_mock):
         headers={"Content-Type": "application/json"},
     )
 
-    assert client.search_nip(
-        nip=SAMPLE_NIP, date=datetime.date(2001, 1, 1)
+    assert (
+        await async_client.search_nip(nip=SAMPLE_NIP, date=datetime.date(2001, 1, 1))
     ) == EntityItem(
         subject=None,
         request_id="aa111-aa111aaa",
@@ -103,7 +53,8 @@ def test_no_result(client, httpx_mock):
     )
 
 
-def test_search_nip(client, httpx_mock, subject):
+@pytest.mark.asyncio
+async def test_search_nip(async_client, httpx_mock, subject):
     """Test proper object is returned for valid NIP."""
     httpx_mock.add_response(
         url=f"https://wl-test.mf.gov.pl/api/search/nip/{SAMPLE_NIP}?date={SAMPLE_DATE}",
@@ -119,8 +70,8 @@ def test_search_nip(client, httpx_mock, subject):
         headers={"Content-Type": "application/json"},
     )
 
-    assert client.search_nip(
-        nip=SAMPLE_NIP, date=datetime.date(2001, 1, 1)
+    assert (
+        await async_client.search_nip(nip=SAMPLE_NIP, date=datetime.date(2001, 1, 1))
     ) == EntityItem(
         subject=subject,
         request_id="aa111-aa111aaa",
@@ -128,7 +79,8 @@ def test_search_nip(client, httpx_mock, subject):
     )
 
 
-def test_search_nips(client, httpx_mock, subject):
+@pytest.mark.asyncio
+async def test_search_nips(async_client, httpx_mock, subject):
     """Test proper object is returned for valid NIPS."""
     httpx_mock.add_response(
         url=f"https://wl-test.mf.gov.pl/api/search/nips/{SAMPLE_NIP}?date={SAMPLE_DATE}",
@@ -149,8 +101,10 @@ def test_search_nips(client, httpx_mock, subject):
         headers={"Content-Type": "application/json"},
     )
 
-    assert client.search_nips(
-        nips=[SAMPLE_NIP], date=datetime.date(2001, 1, 1)
+    assert (
+        await async_client.search_nips(
+            nips=[SAMPLE_NIP], date=datetime.date(2001, 1, 1)
+        )
     ) == EntryList(
         entries=[
             Entry(
@@ -163,7 +117,8 @@ def test_search_nips(client, httpx_mock, subject):
     )
 
 
-def test_search_regon(client, httpx_mock, subject):
+@pytest.mark.asyncio
+async def test_search_regon(async_client, httpx_mock, subject):
     """Test proper object is returned for valid REGON."""
     httpx_mock.add_response(
         url=(
@@ -181,8 +136,10 @@ def test_search_regon(client, httpx_mock, subject):
         headers={"Content-Type": "application/json"},
     )
 
-    assert client.search_regon(
-        regon=SAMPLE_REGON, date=datetime.date(2001, 1, 1)
+    assert (
+        await async_client.search_regon(
+            regon=SAMPLE_REGON, date=datetime.date(2001, 1, 1)
+        )
     ) == EntityItem(
         subject=subject,
         request_id="aa111-aa111aaa",
@@ -190,7 +147,8 @@ def test_search_regon(client, httpx_mock, subject):
     )
 
 
-def test_search_regons(client, httpx_mock, subject):
+@pytest.mark.asyncio
+async def test_search_regons(async_client, httpx_mock, subject):
     """Test proper object is returned for valid regons."""
     httpx_mock.add_response(
         url=(
@@ -214,8 +172,10 @@ def test_search_regons(client, httpx_mock, subject):
         headers={"Content-Type": "application/json"},
     )
 
-    assert client.search_regons(
-        regons=[SAMPLE_REGON], date=datetime.date(2001, 1, 1)
+    assert (
+        await async_client.search_regons(
+            regons=[SAMPLE_REGON], date=datetime.date(2001, 1, 1)
+        )
     ) == EntryList(
         entries=[
             Entry(
@@ -228,7 +188,8 @@ def test_search_regons(client, httpx_mock, subject):
     )
 
 
-def test_search_account(client, httpx_mock, subject):
+@pytest.mark.asyncio
+async def test_search_account(async_client, httpx_mock, subject):
     """Test proper object is returned returned for valid account."""
     httpx_mock.add_response(
         url=(
@@ -246,8 +207,10 @@ def test_search_account(client, httpx_mock, subject):
         headers={"Content-Type": "application/json"},
     )
 
-    assert client.search_bank_account(
-        bank_account=SAMPLE_ACCOUNT, date=datetime.date(2001, 1, 1)
+    assert (
+        await async_client.search_bank_account(
+            bank_account=SAMPLE_ACCOUNT, date=datetime.date(2001, 1, 1)
+        )
     ) == EntityList(
         subjects=[subject],
         request_id="aa111-aa111aaa",
@@ -255,7 +218,8 @@ def test_search_account(client, httpx_mock, subject):
     )
 
 
-def test_search_accounts(client, httpx_mock, subject):
+@pytest.mark.asyncio
+async def test_search_accounts(async_client, httpx_mock, subject):
     """Test proper object is returned returned for valid accounts."""
     httpx_mock.add_response(
         url=(
@@ -278,8 +242,10 @@ def test_search_accounts(client, httpx_mock, subject):
         headers={"Content-Type": "application/json"},
     )
 
-    assert client.search_bank_accounts(
-        bank_accounts=[SAMPLE_ACCOUNT], date=datetime.date(2001, 1, 1)
+    assert (
+        await async_client.search_bank_accounts(
+            bank_accounts=[SAMPLE_ACCOUNT], date=datetime.date(2001, 1, 1)
+        )
     ) == EntryList(
         entries=[
             Entry(
@@ -292,7 +258,8 @@ def test_search_accounts(client, httpx_mock, subject):
     )
 
 
-def test_check_nip(client, httpx_mock):
+@pytest.mark.asyncio
+async def test_check_nip(async_client, httpx_mock):
     """Test proper object is returned for valid NIP and account."""
     httpx_mock.add_response(
         url=(
@@ -310,8 +277,10 @@ def test_check_nip(client, httpx_mock):
         headers={"Content-Type": "application/json"},
     )
 
-    assert client.check_nip(
-        nip=SAMPLE_NIP, bank_account=SAMPLE_ACCOUNT, date=datetime.date(2001, 1, 1)
+    assert (
+        await async_client.check_nip(
+            nip=SAMPLE_NIP, bank_account=SAMPLE_ACCOUNT, date=datetime.date(2001, 1, 1)
+        )
     ) == EntityCheck(
         account_assigned=True,
         request_id="aa111-aa111aaa",
@@ -319,7 +288,8 @@ def test_check_nip(client, httpx_mock):
     )
 
 
-def test_check_regon(client, httpx_mock):
+@pytest.mark.asyncio
+async def test_check_regon(async_client, httpx_mock):
     """Test proper object is returned for valid NIP and account."""
     httpx_mock.add_response(
         url=(
@@ -337,8 +307,12 @@ def test_check_regon(client, httpx_mock):
         headers={"Content-Type": "application/json"},
     )
 
-    assert client.check_regon(
-        regon=SAMPLE_REGON, bank_account=SAMPLE_ACCOUNT, date=datetime.date(2001, 1, 1)
+    assert (
+        await async_client.check_regon(
+            regon=SAMPLE_REGON,
+            bank_account=SAMPLE_ACCOUNT,
+            date=datetime.date(2001, 1, 1),
+        )
     ) == EntityCheck(
         account_assigned=True,
         request_id="aa111-aa111aaa",
@@ -346,8 +320,9 @@ def test_check_regon(client, httpx_mock):
     )
 
 
+@pytest.mark.asyncio
 @freeze_time("2001-01-01")
-def test_default_time(client, httpx_mock, subject):
+async def test_default_time(async_client, httpx_mock, subject):
     """Test that today date is used when no date is passed."""
     httpx_mock.add_response(
         url=f"https://wl-test.mf.gov.pl/api/search/nip/{SAMPLE_NIP}?date={SAMPLE_DATE}",
@@ -363,8 +338,8 @@ def test_default_time(client, httpx_mock, subject):
         headers={"Content-Type": "application/json"},
     )
 
-    assert client.search_nip(
-        nip=SAMPLE_NIP, date=datetime.date(2001, 1, 1)
+    assert (
+        await async_client.search_nip(nip=SAMPLE_NIP, date=datetime.date(2001, 1, 1))
     ) == EntityItem(
         subject=subject,
         request_id="aa111-aa111aaa",
@@ -372,10 +347,11 @@ def test_default_time(client, httpx_mock, subject):
     )
 
 
+@pytest.mark.asyncio
 @pytest.mark.parametrize(
     "error_code", [error_code for error_code in ERROR_CODE_MAPPING]
 )
-def test_api_returns_400(error_code, client, httpx_mock):
+async def test_api_returns_400(error_code, async_client, httpx_mock):
     """Test that `InvalidRequestData` is raised when the API returns 400."""
     httpx_mock.add_response(
         url=f"https://wl-test.mf.gov.pl/api/search/nip/{SAMPLE_NIP}?date={SAMPLE_DATE}",
@@ -386,10 +362,11 @@ def test_api_returns_400(error_code, client, httpx_mock):
     )
 
     with pytest.raises(InvalidRequestData, match=ERROR_CODE_MAPPING[error_code]):
-        client.search_nip(nip=SAMPLE_NIP, date=datetime.date(2001, 1, 1))
+        await async_client.search_nip(nip=SAMPLE_NIP, date=datetime.date(2001, 1, 1))
 
 
-def test_api_returns_500(client, httpx_mock):
+@pytest.mark.asyncio
+async def test_api_returns_500(async_client, httpx_mock):
     """Test that `UnknownExternalApiError` is raised when the API returns 500."""
     httpx_mock.add_response(
         url=f"https://wl-test.mf.gov.pl/api/search/nip/{SAMPLE_NIP}?date={SAMPLE_DATE}",
@@ -400,11 +377,12 @@ def test_api_returns_500(client, httpx_mock):
     )
 
     with pytest.raises(UnknownExternalApiError) as exception_info:
-        client.search_nip(nip=SAMPLE_NIP, date=datetime.date(2001, 1, 1))
+        await async_client.search_nip(nip=SAMPLE_NIP, date=datetime.date(2001, 1, 1))
 
     assert "{'message': 'Unknown error'}" in str(exception_info.value)
 
 
+@pytest.mark.asyncio
 @pytest.mark.parametrize(
     "nip",
     (
@@ -414,12 +392,13 @@ def test_api_returns_500(client, httpx_mock):
         "1234567890",
     ),
 )
-def test_invalid_nip(nip, client):
+async def test_invalid_nip(nip, async_client):
     """Test that error is raised when given NIP is invalid."""
     with pytest.raises(InvalidNipError):
-        client.search_nip(nip=nip)
+        await async_client.search_nip(nip=nip)
 
 
+@pytest.mark.asyncio
 @pytest.mark.parametrize(
     "regon",
     (
@@ -429,12 +408,13 @@ def test_invalid_nip(nip, client):
         "123456789",
     ),
 )
-def test_invalid_regon(regon, client):
+async def test_invalid_regon(regon, async_client):
     """Test that error is raised when given REGON is invalid."""
     with pytest.raises(InvalidRegonError):
-        client.search_regon(regon=regon)
+        await async_client.search_regon(regon=regon)
 
 
+@pytest.mark.asyncio
 @pytest.mark.parametrize(
     "account",
     (
@@ -443,12 +423,13 @@ def test_invalid_regon(regon, client):
         "0" * 27,
     ),
 )
-def test_invalid_account(account, client):
+async def test_invalid_account(account, async_client):
     """Test that error is raised when given account is invalid."""
     with pytest.raises(InvalidAccountError):
-        client.search_bank_account(bank_account=account)
+        await async_client.search_bank_account(bank_account=account)
 
 
+@pytest.mark.asyncio
 @pytest.mark.parametrize(
     "date",
     (
@@ -456,7 +437,7 @@ def test_invalid_account(account, client):
         "not a date",
     ),
 )
-def test_invalid_date(date, client):
+async def test_invalid_date(date, async_client):
     """Test that error is raised when given date is invalid."""
     with pytest.raises(InvalidDateError):
-        client.search_nip(nip=SAMPLE_NIP, date=date)
+        await async_client.search_nip(nip=SAMPLE_NIP, date=date)
