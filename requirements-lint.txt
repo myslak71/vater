@@ -1,8 +1,6 @@
 # Linters
 ########################
-flake8==6.0.0
-flake8-docstrings==1.6.0
-flake8-print==5.0.0
+ruff==0.0.241
 mypy==0.991
 yamllint==1.28.0
 

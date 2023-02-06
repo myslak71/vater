@@ -19,7 +19,9 @@ ERROR_CODE_MAPPING = {
     "WL-114": "NIP is invalid type. Only digits are allowed.",
     "WL-115": "NIP is invalid.",
     "WL-116": "Field `nazwa podmiotu` cannot be empty.",
-    "WL-117": "Field `nazwa podmiotu` is too short - at least 5 characters are required",
+    "WL-117": (
+        "Field `nazwa podmiotu` is too short - at least 5 characters are required"
+    ),
     "WL-118": "Date has value preceding registry range.",
     "WL-130": "Max request arguments exceeded",
     "WL-190": "Invalid Request.",
@@ -63,3 +65,7 @@ class InvalidRegonError(ClientError):
 
 class InvalidAccountError(ClientError):
     """Raised when bank account validation fails."""
+
+
+class UnexpectedServerResponse(ClientError):
+    """Raised when unexpected response is returned from server."""

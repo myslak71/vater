@@ -20,7 +20,7 @@ class EntityPerson(BaseModel):
 
 
 class Subject(BaseModel):
-    """Class representing subject in vat payers register."""
+    """Class representing subject in VAT payers register."""
 
     name: str
     nip: str | None

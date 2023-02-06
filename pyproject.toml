@@ -4,6 +4,49 @@ exclude = "venv"
 [tool.isort]
 include_trailing_comma = "True"
 known_first_party = "vater"
-line_length = 90
+line_length = 88
 multi_line_output = 3
 skip = "venv"
+
+[tool.mypy]
+mypy_path = "vater"
+python_version = 3.11
+check_untyped_defs = "True"
+disable_error_code =  ["attr-defined", "valid-type"]
+
+[tool.ruff]
+line-length = 88
+target-version = "py311"
+
+[tool.setuptools]
+packages = ["vater"]
+
+[build-system]
+requires = ["setuptools", "setuptools-scm"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "vater"
+version = "0.2.0"
+description = "Client for polish VAT payers register API."
+authors = [{ name = "myslak71", email = "myslak@protonmail.com" }]
+maintainers = [{ name = "myslak71", email = "myslak@protonmail.com" }]
+readme = "README.md"
+requires-python = ">=3.11"
+license = { file = "LICENSE" }
+keywords = [
+  "polish",
+  "vat",
+  "client",
+  "api",
+]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Environment :: Console",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3 :: Only",
+]
+urls = { repository = "https://github.com/myslak71/vater" }

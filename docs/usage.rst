@@ -44,47 +44,6 @@ Scripts
      'z5x71-85a8gl5'
    )
 
-If you want to get raw server json just set ``raw`` to True:
-
-.. code-block:: Python
-
-   >>> client.search_nip(nip='1111111111', raw=True)
-   {
-     'result': {
-       'subject': {
-           'name': 'Eminem',
-           'nip': '6969696969',
-           'statusVat': 'Active',
-           'regon': '777777777',
-           'pesel': '77777777777',
-           'krs': '6969696969',
-           'residenceAddress': '8 mile',
-           'workingAddress': '8 mile',
-           'representatives': [
-               {
-                 'companyName': 'Moby Dick Inc',
-                 'firstName': 'sir Richard',
-                 'lastName': 'Lion Heart',
-                 'nip': '6969696969',
-                 'pesel': '77777777777'
-               }
-           ],
-           'authorizedClerks': [],
-           'partners': [],
-           'registrationLegalDate': '2001-01-01',
-           'registrationDenialBasis': 'Denial Basis',
-           'registrationDenialDate': '2002-02-02',
-           'restorationBasis': 'Restoration Basis',
-           'restorationDate': '2003-03-03',
-           'removalBasis': 'Removal Basis',
-           'removalDate': '2004-04-04',
-           'accountNumbers': ['11111111111111111111111111'],
-           'hasVirtualAccounts': False
-     },
-     'requestId': 'aa111-aa111aaa',
-     }
-   }
-
 By default the data is fetched from today's date,
 it can be changed by setting ``date`` argument:
 

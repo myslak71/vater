@@ -1,6 +1,6 @@
 """Vat register client module."""
 import datetime
-from abc import ABC, abstractmethod
+from abc import ABC
 from http import HTTPStatus
 from typing import Any, Self
 
@@ -15,6 +15,7 @@ from vater.errors import (
     InvalidNipError,
     InvalidRegonError,
     InvalidRequestData,
+    UnexpectedServerResponse,
     UnknownExternalApiError,
 )
 from vater.models import EntityCheck, EntityItem, EntityList, EntryList
@@ -108,20 +109,18 @@ class BaseClient(ABC):
             )
         return value
 
-    @abstractmethod
-    async def _send_request(self, url: str, params: dict[str, str]) -> dict:
-        """Make request to VAT register API."""
-        pass
-
     @staticmethod
     def _handle_response_status_code(response: Response) -> dict[str, Any]:
         """Handle response status code."""
+
         if response.status_code == HTTPStatus.INTERNAL_SERVER_ERROR:
             raise UnknownExternalApiError(response.json())
-        if response.status_code == HTTPStatus.BAD_REQUEST:
+        elif response.status_code == HTTPStatus.BAD_REQUEST:
             raise InvalidRequestData(ERROR_CODE_MAPPING[response.json()["code"]])
-        if response.status_code == HTTPStatus.OK:
+        elif response.status_code == HTTPStatus.OK:
             return response.json()
+        else:
+            raise UnexpectedServerResponse(response.json())
 
 
 class AsyncClient(BaseClient):
@@ -151,11 +150,10 @@ class AsyncClient(BaseClient):
         :return: EntityItem object
         """
         self._validate_nip(nip)
-        date = self._validate_date(date)
 
         response_payload = await self._send_request(
             url=f"/api/search/nip/{nip}",
-            params={"date": date.strftime(self._DATE_FORMAT)},
+            params={"date": self._validate_date(date).strftime(self._DATE_FORMAT)},
         )
 
         return EntityItem.parse_obj(response_payload["result"])
@@ -173,11 +171,9 @@ class AsyncClient(BaseClient):
         for nip in nips:
             self._validate_nip(nip)
 
-        date = self._validate_date(date)
-
         response_payload = await self._send_request(
             url=f"/api/search/nips/{','.join(nips)}",
-            params={"date": date.strftime(self._DATE_FORMAT)},
+            params={"date": self._validate_date(date).strftime(self._DATE_FORMAT)},
         )
 
         return EntryList.parse_obj(response_payload["result"])
@@ -193,11 +189,10 @@ class AsyncClient(BaseClient):
         :return: EntityItem object
         """
         self._validate_regon(regon)
-        date = self._validate_date(date)
 
         response_payload = await self._send_request(
             url=f"/api/search/regon/{regon}",
-            params={"date": date.strftime(self._DATE_FORMAT)},
+            params={"date": self._validate_date(date).strftime(self._DATE_FORMAT)},
         )
 
         return EntityItem.parse_obj(response_payload["result"])
@@ -215,11 +210,9 @@ class AsyncClient(BaseClient):
         for regon in regons:
             self._validate_regon(regon)
 
-        date = self._validate_date(date)
-
         response_payload = await self._send_request(
             url=f"/api/search/regons/{','.join(regons)}",
-            params={"date": date.strftime(self._DATE_FORMAT)},
+            params={"date": self._validate_date(date).strftime(self._DATE_FORMAT)},
         )
 
         return EntryList.parse_obj(response_payload["result"])
@@ -235,11 +228,10 @@ class AsyncClient(BaseClient):
         :return: EntityList object
         """
         self._validate_account(bank_account)
-        date = self._validate_date(date)
 
         response_payload = await self._send_request(
             url=f"/api/search/bank-account/{bank_account}",
-            params={"date": date.strftime(self._DATE_FORMAT)},
+            params={"date": self._validate_date(date).strftime(self._DATE_FORMAT)},
         )
 
         return EntityList.parse_obj(response_payload["result"])
@@ -257,11 +249,9 @@ class AsyncClient(BaseClient):
         for account in bank_accounts:
             self._validate_account(account)
 
-        date = self._validate_date(date)
-
         response_payload = await self._send_request(
             url=f"/api/search/bank-accounts/{','.join(bank_accounts)}",
-            params={"date": date.strftime(self._DATE_FORMAT)},
+            params={"date": self._validate_date(date).strftime(self._DATE_FORMAT)},
         )
 
         return EntryList.parse_obj(response_payload["result"])
@@ -282,11 +272,10 @@ class AsyncClient(BaseClient):
         """
         self._validate_regon(regon)
         self._validate_account(bank_account)
-        date = self._validate_date(date)
 
         response_payload = await self._send_request(
             url=f"/api/check/regon/{regon}/bank-account/{bank_account}?date={date}",
-            params={"date": date.strftime(self._DATE_FORMAT)},
+            params={"date": self._validate_date(date).strftime(self._DATE_FORMAT)},
         )
 
         return EntityCheck.parse_obj(response_payload["result"])
@@ -307,11 +296,10 @@ class AsyncClient(BaseClient):
         """
         self._validate_nip(nip)
         self._validate_account(bank_account)
-        date = self._validate_date(date)
 
         response_payload = await self._send_request(
             url=f"/api/check/nip/{nip}/bank-account/{bank_account}?date={date}",
-            params={"date": date.strftime(self._DATE_FORMAT)},
+            params={"date": self._validate_date(date).strftime(self._DATE_FORMAT)},
         )
 
         return EntityCheck.parse_obj(response_payload["result"])
@@ -344,11 +332,10 @@ class Client(BaseClient):
         :return: EntityItem object
         """
         self._validate_nip(nip)
-        date = self._validate_date(date)
 
         response_payload = self._send_request(
             url=f"/api/search/nip/{nip}",
-            params={"date": date.strftime(self._DATE_FORMAT)},
+            params={"date": self._validate_date(date).strftime(self._DATE_FORMAT)},
         )
 
         return EntityItem.parse_obj(response_payload["result"])
@@ -366,11 +353,9 @@ class Client(BaseClient):
         for nip in nips:
             self._validate_nip(nip)
 
-        date = self._validate_date(date)
-
         response_payload = self._send_request(
             url=f"/api/search/nips/{','.join(nips)}",
-            params={"date": date.strftime(self._DATE_FORMAT)},
+            params={"date": self._validate_date(date).strftime(self._DATE_FORMAT)},
         )
 
         return EntryList.parse_obj(response_payload["result"])
@@ -386,11 +371,10 @@ class Client(BaseClient):
         :return: EntityItem object
         """
         self._validate_regon(regon)
-        date = self._validate_date(date)
 
         response_payload = self._send_request(
             url=f"/api/search/regon/{regon}",
-            params={"date": date.strftime(self._DATE_FORMAT)},
+            params={"date": self._validate_date(date).strftime(self._DATE_FORMAT)},
         )
 
         return EntityItem.parse_obj(response_payload["result"])
@@ -408,11 +392,9 @@ class Client(BaseClient):
         for regon in regons:
             self._validate_regon(regon)
 
-        date = self._validate_date(date)
-
         response_payload = self._send_request(
             url=f"/api/search/regons/{','.join(regons)}",
-            params={"date": date.strftime(self._DATE_FORMAT)},
+            params={"date": self._validate_date(date).strftime(self._DATE_FORMAT)},
         )
 
         return EntryList.parse_obj(response_payload["result"])
@@ -428,11 +410,10 @@ class Client(BaseClient):
         :return: EntityList object
         """
         self._validate_account(bank_account)
-        date = self._validate_date(date)
 
         response_payload = self._send_request(
             url=f"/api/search/bank-account/{bank_account}",
-            params={"date": date.strftime(self._DATE_FORMAT)},
+            params={"date": self._validate_date(date).strftime(self._DATE_FORMAT)},
         )
 
         return EntityList.parse_obj(response_payload["result"])
@@ -450,11 +431,9 @@ class Client(BaseClient):
         for account in bank_accounts:
             self._validate_account(account)
 
-        date = self._validate_date(date)
-
         response_payload = self._send_request(
             url=f"/api/search/bank-accounts/{','.join(bank_accounts)}",
-            params={"date": date.strftime(self._DATE_FORMAT)},
+            params={"date": self._validate_date(date).strftime(self._DATE_FORMAT)},
         )
 
         return EntryList.parse_obj(response_payload["result"])
@@ -475,11 +454,10 @@ class Client(BaseClient):
         """
         self._validate_regon(regon)
         self._validate_account(bank_account)
-        date = self._validate_date(date)
 
         response_payload = self._send_request(
             url=f"/api/check/regon/{regon}/bank-account/{bank_account}?date={date}",
-            params={"date": date.strftime(self._DATE_FORMAT)},
+            params={"date": self._validate_date(date).strftime(self._DATE_FORMAT)},
         )
 
         return EntityCheck.parse_obj(response_payload["result"])
@@ -500,11 +478,10 @@ class Client(BaseClient):
         """
         self._validate_nip(nip)
         self._validate_account(bank_account)
-        date = self._validate_date(date)
 
         response_payload = self._send_request(
             url=f"/api/check/nip/{nip}/bank-account/{bank_account}?date={date}",
-            params={"date": date.strftime(self._DATE_FORMAT)},
+            params={"date": self._validate_date(date).strftime(self._DATE_FORMAT)},
         )
 
         return EntityCheck.parse_obj(response_payload["result"])

@@ -48,7 +48,9 @@ def test_search_account(client):
 
 
 def test_search_accounts(client):
-    """Test that subjects and request identifier are returned for valid test accounts."""
+    """
+    Test that subjects and request identifier are returned for valid test accounts.
+    """
     subjects, request_id = client.search_bank_accounts(
         bank_accounts=[
             "70506405335016096312945164",
